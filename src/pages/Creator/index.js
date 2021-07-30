@@ -139,7 +139,7 @@ const activityData = [
 function AuthorPage() {
   const { id } = useParams();
   const author = {
-    avatar: "assets/img/avatars/avatar.jpg",
+    avatar: "/assets/img/avatars/avatar.jpg",
     authorName: "",
     nickName: "",
     email: "",
@@ -148,10 +148,10 @@ function AuthorPage() {
     followers: 3829,
   };
   const { library, active, account } = useWeb3React();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({});
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [avatar, setAvatar] = useState("assets/img/avatars/avatar.jpg");
+  const [avatar, setAvatar] = useState("/assets/img/avatars/avatar.jpg");
   const [file, setFile] = useState(null);
   const [nickName, setNickName] = useState("");
   const [email, setEmail] = useState("");
@@ -163,44 +163,44 @@ function AuthorPage() {
   useEffect(() => {
     auth.onAuthStateChanged((auth) => {
       if (auth) {
-        setUser(auth);
-        setEmail(auth.email);
+        // setEmail(auth.email);
         setUid(auth.uid);
-        getProfile(auth);
       }
     });
-  }, []);
+    getProfile(id);
+  }, [id]);
 
-  const getProfile = async (auth) => {
+  const getProfile = async (id) => {
     let userProfile = (
-      await firestore.collection("users").doc(auth.uid).get()
+      await firestore.collection("users").doc(id).get()
     ).data();
     if (!userProfile)
       userProfile = {
-        avatar: "assets/img/avatars/avatar.jpg",
+        avatar: "/assets/img/avatars/avatar.jpg",
         firstName: "",
         lastName: "",
         nickName: "",
         bio: "",
-        email: auth.email,
+        email: "",
       }
+    setEmail(userProfile.email)
+    setUser(userProfile);
     updateProfile(userProfile)
     resetProfile(userProfile)
   };
   const getNFTList = async () => {
+    console.log('get nft list')
     const res = await firestore.collection("nfts").get()
     let lists = []
     let createdLists = []
     for (let i = 0; i < res.docs.length; i++)
     {
       let doc = res.docs[i].data()
-      console.log('docs', doc)
-      if (doc.owner === account || doc.creator === account) {
+      if (doc.ownerId === id || doc.creatorId === id) {
         const nftInfo = await Axios.get(doc.tokenURI);
-        console.log({ ...doc, ...nftInfo.data })
-        if(doc.owner === account)
+        if(doc.ownerId === id)
           lists.push({ id: res.docs[i].id, ...user, ...doc, ...nftInfo.data })
-        if(doc.creator === account)
+        if(doc.creatorId === id)
           createdLists.push({ id: res.docs[i].id, ...user, ...doc, ...nftInfo.data })
       }
     }
@@ -217,13 +217,11 @@ function AuthorPage() {
       toast.error("Please input required fields");
     }
     if (avatar !== user.avatar && file) {
-      // console.log(firestore)
       const uploadTask = await storage.ref(`/avatars/${uid}`).put(file);
-      console.log(uploadTask);
       if (uploadTask.state === "success") {
         const imgUrl = await uploadTask.ref.getDownloadURL();
         const author = {
-          avatar: imgUrl || "assets/img/avatars/avatar.jpg",
+          avatar: imgUrl || "/assets/img/avatars/avatar.jpg",
           firstName,
           lastName,
           nickName,
@@ -259,7 +257,6 @@ function AuthorPage() {
     input.click();
   }, []);
   const resetProfile = (data) => {
-    console.log("reset profile", data);
     setFirstName(data.firstName);
     setLastName(data.lastName);
     setAvatar(data.avatar);
@@ -275,7 +272,7 @@ function AuthorPage() {
         <div className="row row--grid">
           <div className="col-12 col-xl-3">
             <div className="author author--page">
-              <AuthorMeta data={author} />
+              <AuthorMeta data={user} code={account} />
             </div>
           </div>
 
@@ -290,6 +287,19 @@ function AuthorPage() {
                 <li className="nav-item">
                   <a
                     className="nav-link active"
+                    data-toggle="tab"
+                    href="#tab-0"
+                    role="tab"
+                    aria-controls="tab-0"
+                    aria-selected="true"
+                  >
+                    My NFTs
+                  </a>
+                </li>
+
+                <li className="nav-item">
+                  <a
+                    className="nav-link"
                     data-toggle="tab"
                     href="#tab-1"
                     role="tab"
@@ -334,12 +344,12 @@ function AuthorPage() {
             {/* content tabs */}
             <div className="tab-content">
               <div
-                className="tab-pane fade show active"
+                className="tab-pane fade"
                 id="tab-1"
                 role="tabpanel"
               >
                 <div className="row row--grid">
-                  {cards.map(
+                  {cards.filter(x=>x.isSale).map(
                     (card, index) =>
                       index < 6 && (
                         <div
@@ -354,7 +364,7 @@ function AuthorPage() {
 
                 {/* collapse */}
                 <div className="row row--grid collapse" id="collapsemore">
-                  {cards.map(
+                  {cards.filter(x=>x.isSale).map(
                     (card, index) =>
                       index >= 6 && (
                         <div
@@ -375,6 +385,55 @@ function AuthorPage() {
                       data-target="#collapsemore"
                       aria-expanded="false"
                       aria-controls="collapsemore"
+                    >
+                      Load more
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                className="tab-pane fade show active"
+                id="tab-0"
+                role="tabpanel"
+              >
+                <div className="row row--grid">
+                  {cards.map(
+                    (card, index) =>
+                      index < 6 && (
+                        <div
+                          className="col-12 col-sm-6 col-lg-4"
+                          key={`card-${index}`}
+                        >
+                          <Card data={card} />
+                        </div>
+                      )
+                  )}
+                </div>
+
+                {/* collapse */}
+                <div className="row row--grid collapse" id="collapsemore1">
+                  {cards.map(
+                    (card, index) =>
+                      index >= 6 && (
+                        <div
+                          className="col-12 col-sm-6 col-lg-4"
+                          key={`card-${index}`}
+                        >
+                          <Card data={card} />
+                        </div>
+                      )
+                  )}
+                </div>
+                <div className="row row--grid">
+                  <div className="col-12">
+                    <button
+                      className="main__load"
+                      type="button"
+                      data-toggle="collapse"
+                      data-target="#collapsemore1"
+                      aria-expanded="false"
+                      aria-controls="collapsemore1"
                     >
                       Load more
                     </button>

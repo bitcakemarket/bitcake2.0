@@ -5,6 +5,7 @@ import AssetAuthor from "components/AssetAuthor";
 import { useWeb3React } from "@web3-react/core";
 import Tabs from "./Tabs";
 import Card from "components/Card";
+import Countdown from "react-countdown";
 import "styles/activity.css";
 import { firestore } from "../../firebase";
 import Axios from 'axios';
@@ -15,56 +16,56 @@ const breadcrumb = [
   { title: "Item", page: "/item" },
 ];
 const author = {
-  creatorAvatar: "assets/img/avatars/avatar5.jpg",
+  creatorAvatar: "/assets/img/avatars/avatar5.jpg",
   authorName: "@midinh",
-  collectionAvatar: "assets/img/avatars/avatar9.jpg",
+  collectionAvatar: "/assets/img/avatars/avatar9.jpg",
   collectionTitle: "The Meta Key",
 };
 const historyData = [
   {
-    avatar: "assets/img/avatars/avatar10.jpg",
+    avatar: "/assets/img/avatars/avatar.jpg",
     bnbPrice: 11.0,
     timeAgo: 4,
     nickName: "@erikkk",
     verified: true,
   },
   {
-    avatar: "assets/img/avatars/avatar10.jpg",
+    avatar: "/assets/img/avatars/avatar10.jpg",
     bnbPrice: 11.0,
     timeAgo: 4,
     nickName: "@erikkk",
     verified: true,
   },
   {
-    avatar: "assets/img/avatars/avatar10.jpg",
+    avatar: "/assets/img/avatars/avatar10.jpg",
     bnbPrice: 11.0,
     timeAgo: 4,
     nickName: "@erikkk",
     verified: true,
   },
   {
-    avatar: "assets/img/avatars/avatar10.jpg",
+    avatar: "/assets/img/avatars/avatar10.jpg",
     bnbPrice: 11.0,
     timeAgo: 4,
     nickName: "@erikkk",
     verified: true,
   },
   {
-    avatar: "assets/img/avatars/avatar10.jpg",
+    avatar: "/assets/img/avatars/avatar10.jpg",
     bnbPrice: 11.0,
     timeAgo: 4,
     nickName: "@erikkk",
     verified: true,
   },
   {
-    avatar: "assets/img/avatars/avatar10.jpg",
+    avatar: "/assets/img/avatars/avatar10.jpg",
     bnbPrice: 11.0,
     timeAgo: 4,
     nickName: "@erikkk",
     verified: true,
   },
   {
-    avatar: "assets/img/avatars/avatar10.jpg",
+    avatar: "/assets/img/avatars/avatar10.jpg",
     bnbPrice: 11.0,
     timeAgo: 4,
     nickName: "@erikkk",
@@ -73,21 +74,21 @@ const historyData = [
 ];
 const bidsData = [
   {
-    avatar: "assets/img/avatars/avatar10.jpg",
+    avatar: "/assets/img/avatars/avatar10.jpg",
     bnbPrice: 11.0,
     timeAgo: 4,
     nickName: "@erikkk",
     verified: true,
   },
   {
-    avatar: "assets/img/avatars/avatar10.jpg",
+    avatar: "/assets/img/avatars/avatar10.jpg",
     bnbPrice: 11.0,
     timeAgo: 4,
     nickName: "@erikkk",
     verified: true,
   },
   {
-    avatar: "assets/img/avatars/avatar10.jpg",
+    avatar: "/assets/img/avatars/avatar10.jpg",
     bnbPrice: 11.0,
     timeAgo: 4,
     nickName: "@erikkk",
@@ -96,7 +97,7 @@ const bidsData = [
 ];
 const detail = [
   {
-    avatar: "assets/img/avatars/avatar5.jpg",
+    avatar: "/assets/img/avatars/avatar5.jpg",
     authorName: "@midinh",
     createdYear: 2021,
   },
@@ -105,9 +106,9 @@ const assetCards = [
   {
     type: "image",
     image: "assets/img/cover/cover1.jpg",
-    time: 900,
+    time: "2021-08-07T01:02:03",
     title: "Walking on Air",
-    avatar: "assets/img/avatars/avatar5.jpg",
+    avatar: "/assets/img/avatars/avatar5.jpg",
     nickName: "@nickname",
     currentPrice: 4.89,
     verified: true,
@@ -116,9 +117,9 @@ const assetCards = [
   {
     type: "image",
     image: "assets/img/cover/cover2.jpg",
-    time: 3600,
+    time: "2021-08-07T01:02:03",
     title: "Les Immortels, the Treachery of Artificial Shadows",
-    avatar: "assets/img/avatars/avatar3.jpg",
+    avatar: "/assets/img/avatars/avatar3.jpg",
     nickName: "@neo",
     currentPrice: 2.61,
     verified: false,
@@ -128,9 +129,9 @@ const assetCards = [
     type: "audio",
     image: "assets/img/cover/cover3.jpg",
     audio: "https://www.mfiles.co.uk/mp3-downloads/gs-cd-track2.mp3",
-    time: 300,
+    time: "2021-08-07T01:02:03",
     title: "Flowers in Concrete (Modal)",
-    avatar: "assets/img/avatars/avatar15.jpg",
+    avatar: "/assets/img/avatars/avatar15.jpg",
     nickName: "@min1max",
     currentPrice: 3.19,
     verified: true,
@@ -141,9 +142,9 @@ const assetCards = [
     image: "assets/img/cover/cover3.jpg",
     video:
       "https://storage.opensea.io/files/b160bf7e9e9c391b974b634808a65382.mp4",
-    time: 900,
+    time: "2021-08-07T01:02:03",
     title: "Flowers in Concrete (Modal)",
-    avatar: "assets/img/avatars/avatar15.jpg",
+    avatar: "/assets/img/avatars/avatar15.jpg",
     nickName: "@min1max",
     currentPrice: 3.19,
     verified: true,
@@ -153,9 +154,9 @@ const assetCards = [
     type: "audio",
     image: "assets/img/cover/cover3.jpg",
     audio: "https://www.mfiles.co.uk/mp3-downloads/gs-cd-track2.mp3",
-    time: 3600,
+    time: "2021-08-07T01:02:03",
     title: "Flowers in Concrete (Modal)",
-    avatar: "assets/img/avatars/avatar15.jpg",
+    avatar: "/assets/img/avatars/avatar15.jpg",
     nickName: "@min1max",
     currentPrice: 3.19,
     verified: true,
@@ -166,9 +167,9 @@ const assetCards = [
     image: "assets/img/cover/cover3.jpg",
     video:
       "https://storage.opensea.io/files/b160bf7e9e9c391b974b634808a65382.mp4",
-    time: 300,
+    time: "2021-08-07T01:02:03",
     title: "Flowers in Concrete (Modal)",
-    avatar: "assets/img/avatars/avatar15.jpg",
+    avatar: "/assets/img/avatars/avatar15.jpg",
     nickName: "@min1max",
     currentPrice: 3.19,
     verified: false,
@@ -188,16 +189,82 @@ function Item(props) {
     let nft_item = (
       await firestore.collection("nfts").doc(id).get()
     ).data();
-    console.log(nft_item)
     const nft_info = (await Axios.get(nft_item.tokenURI)).data;
-    console.log(nft_info)
     const owner_info = (await firestore.collection("users").doc(nft_item.ownerId).get()).data()
-    console.log(owner_info)
+    console.log(nft_item, nft_info, owner_info)
     setItem({...nft_item, ...nft_info, ...owner_info})
   }
   useEffect(() => {
-    getData()
+    if (id === 'image') {
+      setItem({
+        auctionLength: 0,
+        creator: account,
+        creatorId: "snyMGafOsISG5s86ZJBQZfCq6xq1",
+        isSale: true,
+        likes: 0,
+        owner: account,
+        ownerId: "snyMGafOsISG5s86ZJBQZfCq6xq1",
+        price: "0.03",
+        saleType: "fix",
+        tokenId: 0,
+        tokenURI: null,
+        category: "art",
+        image: "/assets/img/cover/cover3.jpg",
+        imageAttach: null,
+        imageBg: "/assets/img/cover/cover3.jpg",
+        name: 'Sample Image',
+        description: 'Sample Image Description',
+        royalties: 5,
+        type: "image",
+        avatar: "/assets/img/avatars/avatar.jpg",
+        bio: "This is the Bio",
+        email: "email.sample@gmail.com",
+        firstName: "User",
+        lastName: "",
+        nickName: "@nickname"
+      })
+    } else if (id === 'audio') {
+      setItem({
+        auctionLength: 0,
+        creator: account,
+        creatorId: "snyMGafOsISG5s86ZJBQZfCq6xq1",
+        isSale: true,
+        likes: 0,
+        owner: account,
+        ownerId: "snyMGafOsISG5s86ZJBQZfCq6xq1",
+        price: "0.03",
+        saleType: "fix",
+        tokenId: 0,
+        tokenURI: null,
+        category: "art",
+        image: "https://www.mfiles.co.uk/mp3-downloads/gs-cd-track2.mp3",
+        imageAttach: null,
+        imageBg: "/assets/img/cover/cover3.jpg",
+        name: 'Sample Audio',
+        description: 'Sample Audio Description',
+        royalties: 5,
+        type: "audio",
+        avatar: "/assets/img/avatars/avatar.jpg",
+        bio: "This is the Bio",
+        email: "email.sample@gmail.com",
+        firstName: "User",
+        lastName: "",
+        nickName: "@nickname"
+      })
+      
+    } else if (id === 'video') {
+      
+    } else {
+      getData()
+    }
   }, [id])
+  const renderer = ({ days, hours, minutes, seconds, completed }) => {
+    return (
+      <div style={{textAlign: 'center', color:'white', marginTop:10, fontSize:18}}>
+        {days} Days {hours}:{minutes}:{seconds}
+      </div>
+    );
+  }
   return (
     <main className="main">
       <div className="container">
@@ -250,7 +317,9 @@ function Item(props) {
                         </svg>{" "}
                         Auction ends in
                       </span>
-                      <div className="asset__clock"></div>
+                      <div className="card__clock">
+                        <Countdown date={item.time} renderer={renderer} />
+                      </div>
                     </>
                   }
                 </div>

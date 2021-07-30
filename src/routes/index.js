@@ -23,7 +23,6 @@ import Error from "pages/404";
 import Privacy from "pages/Privacy";
 
 function Routes(props) {
-  console.log(props);
   return (
     <div>
       <BrowserRouter>
@@ -40,8 +39,8 @@ function Routes(props) {
           <Route path="/creators" component={Authors} />
           <Route path="/creator/:id" component={Creator} />
           <Route path="/collection" component={Collection} />
-          <PrivateRoute
-            authenticated={props.authenticated}
+          <Route
+            // authenticated={props.authenticated}
             path="/create"
             component={Create}
           />

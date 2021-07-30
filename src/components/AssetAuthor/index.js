@@ -4,21 +4,23 @@ import { firestore, auth } from "../../firebase";
 import "./style.css";
 function Item(props) {
   const { id } = useParams();
-  const [creatorData, setCreatorData] = useState({ avatar: "assets/img/avatars/avatar.jpg", name: "" })
-  const [ownerData, setOwnerData] = useState({ avatar: "assets/img/avatars/avatar.jpg", name: "" })
+  const [creatorData, setCreatorData] = useState({ avatar: "/assets/img/avatars/avatar.jpg", firstName: "User", lastName: "" })
+  const [ownerData, setOwnerData] = useState({ avatar: "/assets/img/avatars/avatar.jpg", firstName: "User", lastName: "" })
   // const { ownerId } = props.data;
   const [uid, setUid] = useState('')
-  console.log(auth)
   const getAvatars = async () => {
     let nft_item = (
       await firestore.collection("nfts").doc(id).get()
     ).data();
     setOwnerData((await firestore.collection("users").doc(nft_item.ownerId).get()).data())
-    setCreatorData((await firestore.collection("users").doc(nft_item.ownerId).get()).data())
-    console.log(nft_item.ownerId, '%%%%%%%%%%%%%%%%%%%%%%%%%%%', ownerData)
+    setCreatorData((await firestore.collection("users").doc(nft_item.creatorId).get()).data())
   }
   useEffect(() => {
-    getAvatars()
+    if (id === "image" || id === "audio" || id === "video") {
+      
+    } else {
+      getAvatars()
+    }
   }, [id])
   return (
     <ul className="asset__authors">

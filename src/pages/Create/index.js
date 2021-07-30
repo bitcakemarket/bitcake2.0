@@ -15,7 +15,7 @@ import "styles/create.css";
 const client = new NFTStorage({ token: NFTStorageKey });
 
 const author = {
-  avatar: "assets/img/avatars/avatar.jpg",
+  avatar: "/assets/img/avatars/avatar.jpg",
   authorName: "Adam Zapel",
   nickName: "@aaarthur",
   code: "XAVUW3sw3ZunitokcLtemEfX3tGuX2plateWdh",
@@ -23,7 +23,7 @@ const author = {
   followers: 3829,
 };
 function Create() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({});
   const [type, setType] = useState("audio");
   const [file, setFile] = useState(null);
   const [bgFile, setBgFile] = useState(null);
@@ -46,7 +46,6 @@ function Create() {
   const history = useHistory();
 
   useEffect(() => {
-    console.log("EEEEEEEEEEEEEEEE");
     auth.onAuthStateChanged((user) => {
       if (user) {
         getProfile(user);
@@ -75,7 +74,6 @@ function Create() {
     reader.readAsArrayBuffer(file);
   };
   const getBgFile = (file) => {
-    console.log('sdsdasdasd', file)
     const reader = new FileReader();
     reader.onabort = () => console.log("file reading was aborted");
     reader.onerror = () => console.log("file reading has failed");
@@ -95,9 +93,7 @@ function Create() {
       if (account) {
         setCreateProcess(true);
         const result = await ipfs.files.add(Buffer.from(buffer));
-        console.log('main', result)
         const imgBg = bgFile ? await ipfs.files.add(Buffer.from(bgBuffer)) : null;
-        console.log('audio bg', imgBg)
         const imgAttach = attachfile
           ? await ipfs.files.add(Buffer.from(attachBuffer))
           : null;
@@ -121,7 +117,6 @@ function Create() {
             "metadata.json"
           ),
         ]);
-        console.log("/upload task", cid);
         if (cid) {
           const tokenURI = `https://ipfs.io/ipfs/${cid}/metadata.json`;
           firestore
@@ -131,17 +126,19 @@ function Create() {
               tokenId: 0,
               tokenURI,
               ownerId: user.id,
+              creatorId: user.id,
               owner: account,
               creator: account,
               price,
               isSale,
               saleType,
-              auctionLength: saleType !== "fix" ? auctionLength : 0,
+              auctionLength: saleType !== "fix" ? parseInt(auctionLength) : 0,
+              time: saleType !== "fix" ? Date.now() + 3600 * 1000 * parseInt(auctionLength) : 0,
               likes: 0,
             })
             .then(() => {
               toast.success("Create NFT");
-              history.push(`/creator/${account}`);
+              history.push(`/creator/${user.id}`);
               setCreateProcess(false);
             })
             .catch((err) => {
@@ -165,7 +162,7 @@ function Create() {
         <div className="row row--grid">
           <div className="col-12 col-xl-3">
             <div className="author author--page">
-              {/* <AuthorMeta data={user} /> */}
+              <AuthorMeta data={user} code={account} />
             </div>
           </div>
           <div className="col-12 col-xl-9">
@@ -207,7 +204,6 @@ function Create() {
                     <NFTDropzone
                       nftType="Audio"
                       onChange={(newfile) => {
-                        console.log("wewer", newfile);
                         setFile(newfile);
                         getFile(newfile);
                       }}
@@ -215,7 +211,6 @@ function Create() {
                     <NFTDropzone
                       nftType="image"
                       onChange={(newfile) => {
-                        console.log("wewer");
                         setBgFile(newfile);
                         getBgFile(newfile);
                       }}
@@ -226,7 +221,6 @@ function Create() {
                     <NFTDropzone
                       nftType="Video"
                       onChange={(newfile) => {
-                        console.log("wewer");
                         setFile(newfile);
                         getFile(newfile);
                       }}
@@ -237,7 +231,6 @@ function Create() {
                     <NFTDropzone
                       nftType="image"
                       onChange={(newfile) => {
-                        console.log("wewer");
                         setFile(newfile);
                         getFile(newfile);
                       }}
@@ -269,7 +262,6 @@ function Create() {
                     <NFTDropzone
                       nftType={"all"}
                       onChange={(newfile) => {
-                        console.log("wewer");
                         getFile(newfile, true);
                         setattachfile(newfile);
                       }}
@@ -345,7 +337,7 @@ function Create() {
                       id="description"
                       name="description"
                       className="sign__textarea"
-                      placeholder="e. g. 'After purchasing you will able to received...'"
+                      placeholder="e.g. ‘After purchasing, you will receive…’"
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                     ></textarea>
@@ -376,7 +368,7 @@ function Create() {
                     <div className="col-9">
                       <label className="sign__title" htmlFor="price">
                         {saleType !== "fix" ? "Starting Bid " : ""}Price - in
-                        "KCS"
+                        "BNB"
                       </label>
                     </div>
                     <div className="col-3">
@@ -410,7 +402,7 @@ function Create() {
                     </label>
 
                     <label className="sign__label" htmlFor="price">
-                      current KCS price: 1 KCS = $300
+                      current BNB price: 1 BNB = $300
                     </label>
                   </div>
                 </div>

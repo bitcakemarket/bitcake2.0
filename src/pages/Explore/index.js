@@ -37,7 +37,6 @@ function Explore() {
         const nftInfo = await Axios.get(doc.tokenURI);
         lists.push({ id: res.docs[i].id, ...doc, ...nftInfo.data })
     }
-    console.log('@@@@@@@@@@@@@@@@',lists)
     setCards(lists)
     setFilter(lists);
   }
@@ -100,7 +99,6 @@ function Explore() {
         break;
       default: break;      
     }
-    console.log(e.target.value);
   }
   const handleReset = () => {
     console.log("reseted");
@@ -141,12 +139,12 @@ function Explore() {
               </div>
               <div className="slidecontainer mt-3">
                 <label className="sign__label" htmlFor="subcategory">
-                  PRICE RANGE  <span style={{fontSize:'20px', color:'white'}}>{price} </span> KCS
+                  PRICE RANGE  <span style={{fontSize:'20px', color:'white'}}>{price} </span> BNB
                 </label>
                 <input type="range" min="1" max="10000" className="slider" id="myRange" onChange={(e)=>sliderChange(e)}/>
                 <div className="d-flex justify-content-between">
-                  <p className="nft-color-white">1 KCS</p>
-                  <p className="nft-color-white">10000KCS</p>
+                  <p className="nft-color-white">1 BNB</p>
+                  <p className="nft-color-white">10000BNB</p>
                 </div>
               </div>
               <div className="sign__group">
@@ -202,7 +200,7 @@ function Explore() {
             <div className="col-12 col-xl-9">
               <div className="row row--grid">
                 {filterData.map((card,index)=>(
-                  <div className="col-12 col-sm-6 col-lg-4 col-xl-3"  key={`card-${index}`}>
+                  <div className="col-12 col-sm-6 col-lg-4"  key={`card-${index}`}>
                     <Card data={card} />
                   </div>
                 ))}

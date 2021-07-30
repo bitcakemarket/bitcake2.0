@@ -32,7 +32,7 @@ const img = {
 };
 
 const acceptedList = {
-  Audio: "audio/*",
+  Audio: "audio/mp3, audio/wav",
   All: "image/*, video/*",
 };
 
@@ -47,7 +47,6 @@ export default function NFTDropzone(props) {
         : acceptedList["All"],
     onDrop: (acceptedFiles) => {
       const file = acceptedFiles[0];
-      console.log(acceptedFiles)
       props.onChange(file);
       if (file.type.startsWith("audio")) {
         file.preview = "assets/icon/audio.png";

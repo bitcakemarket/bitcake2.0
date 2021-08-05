@@ -60,7 +60,7 @@ function ConnectWallet() {
             </div>
             <div className="col-4" style={{ marginTop: 230 }}>
               <iframe width="420" height="315"
-                      src="https://www.youtube.com/watch?v=d8IBpfs9bf4&t=5s">
+                      src="https://www.youtube.com/embed/v=d8IBpfs9bf4&t=5s">
               </iframe>
             </div>
           </div>

@@ -11,6 +11,7 @@ import { NFTStorageKey, FactoryAddress } from "../../constants/index";
 import { auth } from "../../firebase";
 import ipfs from "utils/ipfsApi.js";
 import "styles/create.css";
+import {Web3Provider} from "@ethersproject/providers";
 
 const client = new NFTStorage({ token: NFTStorageKey });
 
@@ -22,6 +23,7 @@ const author = {
   text: "All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary",
   followers: 3829,
 };
+
 function Create() {
   const [user, setUser] = useState({});
   const [type, setType] = useState("audio");
@@ -35,6 +37,7 @@ function Create() {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState(0);
   const [saleType, setSaleType] = useState("fix");
+  const [collection, setCollection] = useState("");
   const [auctionLength, setAuctionLength] = useState("12");
   const [buffer, setBuffer] = useState(null);
   const [bgBuffer, setBgBuffer] = useState(null);
@@ -85,8 +88,18 @@ function Create() {
     reader.readAsArrayBuffer(file);
   };
 
+  const setCollectionList = (value) => {
+    console.log('value', value);
+    if (value === "") {
+      setCollection(value);
+    } else {
+      setCollection(value);
+    }
+  }
+
   const createNFT = async () => {
     try {
+      console.log('account', account);
       await library
         .getSigner(account)
         .signMessage("Please check this account is yours");
@@ -106,6 +119,7 @@ function Create() {
                 creator: account,
                 type,
                 category,
+                collection: collection,
                 royalties: parseInt(royalties) * 5,
                 image: `https://ipfs.io/ipfs/${result[0].hash}`,
                 imageAttach: imgAttach
@@ -132,6 +146,7 @@ function Create() {
               price,
               isSale,
               saleType,
+              collection: collection,
               auctionLength: saleType !== "fix" ? parseInt(auctionLength) : 0,
               time: saleType !== "fix" ? Date.now() + 3600 * 1000 * parseInt(auctionLength) : 0,
               likes: 0,
@@ -343,6 +358,29 @@ function Create() {
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                     ></textarea>
+                  </div>
+                </div>
+
+                <div className="col-12">
+                  <h4 className="sign__title">Create or Select Collection</h4>
+                </div>
+
+                <div className="col-12">
+                  <div className="sign__group">
+                    <select
+                      id="collection"
+                      name="collection"
+                      className="sign__select"
+                      value={collection}
+                      onChange={(e) => setCollectionList(e.target.value)}
+                    >
+
+                      <option value=""> -- Select an Option -- </option>
+                      <option value="newCollection">Create New Collection</option>
+                      <option value="Hashmasks">Hashmasks</option>
+                      <option value="NFTheft">NFTheft</option>
+                      <option value="Inventory">Inventory</option>
+                    </select>
                   </div>
                 </div>
 

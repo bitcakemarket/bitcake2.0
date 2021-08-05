@@ -1,0 +1,11 @@
+/*==============================
+	HotCard
+==============================*/
+.collection {
+  margin: 0px 15px;
+  border-radius: 16px;
+}
+
+.collection__cover img {
+  width: 100%;
+}

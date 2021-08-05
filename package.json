@@ -19,6 +19,7 @@
     "@web3-react/network-connector": "^6.1.9",
     "axios": "^0.21.1",
     "firebase": "^8.7.1",
+    "font-awesome": "^4.7.0",
     "formik": "^2.2.9",
     "ipfs-api": "^26.1.2",
     "nft.storage": "^3.0.1",

@@ -26,6 +26,7 @@ function Creator() {
   const [cards, setCards] = useState([]);
   const [uid, setUid] = useState("");
   const [createdCards, setCreatedCards] = useState([]);
+  const [collections, setCollections] = useState([]);
 
   useEffect(() => {
     auth.onAuthStateChanged((auth) => {
@@ -61,11 +62,13 @@ function Creator() {
     const res = await firestore.collection("nfts").get()
     let lists = []
     let createdLists = []
+    let collectionList = []
     for (let i = 0; i < res.docs.length; i++)
     {
       let doc = res.docs[i].data()
+      const nftInfo = await Axios.get(doc.tokenURI);
+      collectionList.push({ id: res.docs[i].id, ...user, ...doc, ...nftInfo.data })
       if (doc.ownerId === id || doc.creatorId === id) {
-        const nftInfo = await Axios.get(doc.tokenURI);
         if(doc.ownerId === id)
           lists.push({ id: res.docs[i].id, ...user, ...doc, ...nftInfo.data })
         if(doc.creatorId === id)
@@ -74,10 +77,12 @@ function Creator() {
     }
     setCards(lists)
     setCreatedCards(createdLists)
+    setCollections(collectionList)
   }
 
   useEffect(() => {
     getNFTList()
+    console.log('account', account);
   }, [account])
   
   const saveProfile = async () => {
@@ -230,6 +235,18 @@ function Creator() {
                     </a>
                   </li>
                 }
+                <li className="nav-item">
+                  <a
+                    className="nav-link"
+                    data-toggle="tab"
+                    href="#tab-3"
+                    role="tab"
+                    aria-controls="tab-2"
+                    aria-selected="false"
+                  >
+                    Collections
+                  </a>
+                </li>
               </ul>
               {/* end tabs nav */}
             </div>
@@ -349,6 +366,55 @@ function Creator() {
                 {/* paginator */}
                 {/* <Paginator /> */}
                 {/* end paginator */}
+              </div>
+
+              <div
+                className="tab-pane fade"
+                id="tab-3"
+                role="tabpanel"
+              >
+                <div className="row row--grid">
+                  {collections.map(
+                    (collection, index) =>
+                      index < 6 && (
+                        <div
+                          className="col-12 col-sm-6 col-lg-4"
+                          key={`card-${index}`}
+                        >
+                          <Card data={collection} />
+                        </div>
+                      )
+                  )}
+                </div>
+
+                {/* collapse */}
+                <div className="row row--grid collapse" id="collapsemore">
+                  {cards.filter(x=>x.isSale).map(
+                    (card, index) =>
+                      index >= 6 && (
+                        <div
+                          className="col-12 col-sm-6 col-lg-4"
+                          key={`card-${index}`}
+                        >
+                          <Card data={card} />
+                        </div>
+                      )
+                  )}
+                </div>
+                <div className="row row--grid">
+                  <div className="col-12">
+                    <button
+                      className="main__load"
+                      type="button"
+                      data-toggle="collapse"
+                      data-target="#collapsemore"
+                      aria-expanded="false"
+                      aria-controls="collapsemore"
+                    >
+                      Load more
+                    </button>
+                  </div>
+                </div>
               </div>
 
               <div className="tab-pane fade" id="tab-4" role="tabpanel">

@@ -21,6 +21,7 @@ import SignUp from "pages/SignUp";
 import Forgot from "pages/ForgotPassword";
 import Error from "pages/404";
 import Privacy from "pages/Privacy";
+import ConnectWallet from "pages/ConnectWallet";
 
 function Routes(props) {
   return (
@@ -53,6 +54,7 @@ function Routes(props) {
           <Route path="/forgot" component={Forgot} />
           <Route path="/404" component={Error} />
           <Route path="/privacy" component={Privacy} />
+          <Route path="/connect-wallet" component={ConnectWallet} />
         </Switch>
         <Footer />
       </BrowserRouter>

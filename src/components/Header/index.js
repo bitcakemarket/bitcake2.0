@@ -11,7 +11,7 @@ import "styles/header.css";
 import { shortenHex } from "utils/helpers";
 import EthBalance from "components/EthBalance";
 export const injectedConnector = new InjectedConnector({
-  supportedChainIds: [97],
+  supportedChainIds: [56, 97],
 });
 
 function Header(props) {
@@ -31,8 +31,8 @@ function Header(props) {
 
   const { activate, connector, account } = useWeb3React();
 
-  const connectWallet = () => {
-    activate(injectedConnector);
+  const connectWallet = async () => {
+    await activate(injectedConnector);
   };
   // handle logic to recognize the connector currently being activated
   const [activatingConnector, setActivatingConnector] = useState();
@@ -193,27 +193,31 @@ function Header(props) {
             </div>
           )}
           <div className="header__action header__action--signin">
-            <a
-              className="header__action-btn"
-              href="/"
-              onClick={handleClickOpen}
-            >
+
               {!account ?
-                <span style={{border:'1px solid #c8135a', borderRadius:20, padding:'9px 15px'}}>
-                  Connect Wallet
-                </span>
+                <a
+                  className="header__action-btn"
+                  href="/connect-wallet"
+                >
+                  <span style={{border:'1px solid #c8135a', borderRadius:20, padding:'9px 15px'}}>
+                    Connect Wallet
+                  </span>
+                </a>
                 :
-                <div>
-                  <div style={{display:'inline-flex'}}>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                      <path d="M19,7H18V6a3,3,0,0,0-3-3H5A3,3,0,0,0,2,6H2V18a3,3,0,0,0,3,3H19a3,3,0,0,0,3-3V10A3,3,0,0,0,19,7ZM5,5H15a1,1,0,0,1,1,1V7H5A1,1,0,0,1,5,5ZM20,15H19a1,1,0,0,1,0-2h1Zm0-4H19a3,3,0,0,0,0,6h1v1a1,1,0,0,1-1,1H5a1,1,0,0,1-1-1V8.83A3,3,0,0,0,5,9H19a1,1,0,0,1,1,1Z" />
-                    </svg>
-                  <span>{shortenHex(account, 4)}</span>
+                <a
+                  className="header__action-btn">
+                  <div>
+                    <div style={{display:'inline-flex'}}>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M19,7H18V6a3,3,0,0,0-3-3H5A3,3,0,0,0,2,6H2V18a3,3,0,0,0,3,3H19a3,3,0,0,0,3-3V10A3,3,0,0,0,19,7ZM5,5H15a1,1,0,0,1,1,1V7H5A1,1,0,0,1,5,5ZM20,15H19a1,1,0,0,1,0-2h1Zm0-4H19a3,3,0,0,0,0,6h1v1a1,1,0,0,1-1,1H5a1,1,0,0,1-1-1V8.83A3,3,0,0,0,5,9H19a1,1,0,0,1,1,1Z" />
+                      </svg>
+                    <span>{shortenHex(account, 4)}</span>
+                    </div>
+                      {/* <EthBalance /> */}
                   </div>
-                    {/* <EthBalance /> */}
-                </div>
+                </a>
               }
-            </a>
+
           </div>
         </div>
 

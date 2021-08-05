@@ -12,21 +12,21 @@ export function useInactiveListener(suppress = false) {
     }
     const { ethereum } = window;
     if (ethereum && ethereum.on && !active && !error) {
-      const handleChainChanged = (chainId) => {
+      const handleChainChanged = async (chainId) => {
         console.log("chainChanged", chainId);
-        activate(injected);
+        await activate(injected);
       };
 
-      const handleAccountsChanged = (accounts) => {
+      const handleAccountsChanged = async (accounts) => {
         console.log("accountsChanged", accounts);
         if (accounts.length > 0) {
-          activate(injected);
+          await activate(injected);
         }
       };
 
-      const handleNetworkChanged = (networkId) => {
+      const handleNetworkChanged = async (networkId) => {
         console.log("networkChanged", networkId);
-        activate(injected);
+        await activate(injected);
       };
 
       ethereum.on("chainChanged", handleChainChanged);

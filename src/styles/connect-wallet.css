@@ -1,0 +1,47 @@
+.wallet-bg {
+    -webkit-transform: translateY(-100%) rotate(90deg); /* Safari */
+    -moz-transform: translateY(-100%) rotate(90deg); /* Firefox 3.6 Firefox 4 */
+    /*-moz-transform-origin: right top; */
+    -ms-transform: translateY(-100%) rotate(90deg); /* IE9 */
+    -o-transform: translateY(-100%) rotate(90deg); /* Opera */
+    transform: translateY(-100%) rotate(90deg); /* W3C */
+    -webkit-transform-origin: left bottom;
+    -moz-transform-origin: left bottom;
+    -ms-transform-origin: left bottom;
+    -o-transform-origin: left bottom;
+    transform-origin: left bottom;
+    width: 990px;
+    overflow-x: hidden;
+    position: absolute;
+}
+
+.connect-wallet {
+    background: #ffffff;
+}
+
+.connect-wallet a {
+    color: #000000;
+}
+
+.btn-connect-wallet {
+    display: block;
+    padding: 30px 40px;
+    border: 1px solid #ffffff;
+    border-radius: 15px;
+}
+
+.main h1,span,div,i {
+    color: #ffffff;
+}
+
+.btn-connect-wallet h3 {
+    color: #ffffff;
+}
+
+.btn-connect-wallet span {
+    font-size: 15px;
+}
+
+.main a {
+    cursor: pointer;
+}

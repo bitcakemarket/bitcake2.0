@@ -20,12 +20,9 @@ function ConnectWallet() {
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
       <main className="main">
-        <div className="wallet-bg">
-          <img src="/assets/img/home/bg.gif" />
-        </div>
         <div className="container">
           <div className="row">
-            <div className="offset-2 col-8" style={{ marginTop: 180 }}>
+            <div className="col-8" style={{ marginTop: 180 }}>
               <a href="/">
                 <i className="fa fa-arrow-left"></i>
                 <span className="ml-3"><b>Go Back</b></span>
@@ -60,6 +57,11 @@ function ConnectWallet() {
                   funds without your confirmation.
                 </div>
               </div>
+            </div>
+            <div className="col-4" style={{ marginTop: 230 }}>
+              <iframe width="420" height="315"
+                      src="https://www.youtube.com/watch?v=d8IBpfs9bf4&t=5s">
+              </iframe>
             </div>
           </div>
         </div>

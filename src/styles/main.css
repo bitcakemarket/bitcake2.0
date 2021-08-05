@@ -392,6 +392,9 @@
   background-color: #222227;
   z-index: 1;
 }
+a {
+  cursor: pointer;
+}
 @media (min-width: 768px) {
   .main {
     padding: 0 0 70px;

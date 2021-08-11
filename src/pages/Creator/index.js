@@ -9,6 +9,10 @@ import { updateProfile } from "reducers/actions/userAction";
 import { useWeb3React } from "@web3-react/core";
 import Axios from "axios";
 import { useParams } from "react-router-dom";
+import EditCard from "components/EditCard";
+import {Modal} from "@material-ui/core";
+import HotCard from "../../components/HotCard";
+import OwlCarousel from "react-owl-carousel";
 
 function Creator() {
   const { id } = useParams();
@@ -27,15 +31,18 @@ function Creator() {
   const [uid, setUid] = useState("");
   const [createdCards, setCreatedCards] = useState([]);
   const [collections, setCollections] = useState([]);
+  // const [showModal, setShowModal] = useState(false);
 
-  useEffect(() => {
+  useEffect(async () => {
     auth.onAuthStateChanged((auth) => {
       if (auth) {
         // setEmail(auth.email);
         setUid(auth.uid);
       }
     });
-    getProfile(id);
+    await getProfile(id);
+    await getNFTList();
+    await getCollections();
   }, [id]);
 
   const getProfile = async (id) => {
@@ -61,13 +68,12 @@ function Creator() {
     console.log('get nft list')
     const res = await firestore.collection("nfts").get()
     let lists = []
-    let createdLists = []
-    let collectionList = []
+    let createdLists = [];
+    console.log('res.docs', res.docs);
     for (let i = 0; i < res.docs.length; i++)
     {
       let doc = res.docs[i].data()
       const nftInfo = await Axios.get(doc.tokenURI);
-      collectionList.push({ id: res.docs[i].id, ...user, ...doc, ...nftInfo.data })
       if (doc.ownerId === id || doc.creatorId === id) {
         if(doc.ownerId === id)
           lists.push({ id: res.docs[i].id, ...user, ...doc, ...nftInfo.data })
@@ -76,15 +82,28 @@ function Creator() {
       }
     }
     setCards(lists)
+    console.log('lists', lists);
     setCreatedCards(createdLists)
-    setCollections(collectionList)
   }
 
-  useEffect(() => {
-    getNFTList()
-    console.log('account', account);
-  }, [account])
-  
+  const getCollections = async () => {
+    const currentCollections = await firestore.collection('collections').get();
+    console.log('currentCollectins', currentCollections.docs);
+    let collectionList = [];
+    for (let i = 0; i < currentCollections.docs.length; i++) {
+      let dataTemp = currentCollections.docs[i].data();
+      dataTemp.id = currentCollections.docs[i].id;
+      collectionList.push(dataTemp);
+    }
+    setCollections(collectionList);
+    console.log('collections', collections);
+  }
+  //
+  // useEffect(async () => {
+  //   await getNFTList();
+  //   await getCollections();
+  // }, [account])
+
   const saveProfile = async () => {
     if (!firstName || !lastName || !nickName || !bio) {
       toast.error("Please input required fields");
@@ -358,7 +377,7 @@ function Creator() {
                       className="col-12 col-sm-6 col-lg-4"
                       key={`card-${index}`}
                     >
-                      <Card data={card} />
+                      <EditCard data={card} />
                     </div>
                   ))}
                 </div>
@@ -373,48 +392,43 @@ function Creator() {
                 id="tab-3"
                 role="tabpanel"
               >
-                <div className="row row--grid">
-                  {collections.map(
-                    (collection, index) =>
-                      index < 6 && (
-                        <div
-                          className="col-12 col-sm-6 col-lg-4"
-                          key={`card-${index}`}
-                        >
-                          <Card data={collection} />
-                        </div>
-                      )
-                  )}
-                </div>
+                <OwlCarousel className='owl-theme' mouseDrag={false} margin={10} nav dots={false} items={5} navText={['<i class="fa fa-arrow-left"></i>', '<i class="fa fa-arrow-right"></i>']}>
+                  {(collections.length > 0) &&
+                    (collections
+                    .map(
+                      (collection, index) =>
+                        <HotCard data={collection} key={`card-${index}`} />
+                    ))}
+                </OwlCarousel>
 
                 {/* collapse */}
-                <div className="row row--grid collapse" id="collapsemore">
-                  {cards.filter(x=>x.isSale).map(
-                    (card, index) =>
-                      index >= 6 && (
-                        <div
-                          className="col-12 col-sm-6 col-lg-4"
-                          key={`card-${index}`}
-                        >
-                          <Card data={card} />
-                        </div>
-                      )
-                  )}
-                </div>
-                <div className="row row--grid">
-                  <div className="col-12">
-                    <button
-                      className="main__load"
-                      type="button"
-                      data-toggle="collapse"
-                      data-target="#collapsemore"
-                      aria-expanded="false"
-                      aria-controls="collapsemore"
-                    >
-                      Load more
-                    </button>
-                  </div>
-                </div>
+                {/*<div className="row row--grid collapse" id="collapsemore">*/}
+                {/*  {cards.filter(x=>x.isSale).map(*/}
+                {/*    (card, index) =>*/}
+                {/*      index >= 6 && (*/}
+                {/*        <div*/}
+                {/*          className="col-12 col-sm-6 col-lg-4"*/}
+                {/*          key={`card-${index}`}*/}
+                {/*        >*/}
+                {/*          <Card data={card} />*/}
+                {/*        </div>*/}
+                {/*      )*/}
+                {/*  )}*/}
+                {/*</div>*/}
+                {/*<div className="row row--grid">*/}
+                {/*  <div className="col-12">*/}
+                {/*    <button*/}
+                {/*      className="main__load"*/}
+                {/*      type="button"*/}
+                {/*      data-toggle="collapse"*/}
+                {/*      data-target="#collapsemore"*/}
+                {/*      aria-expanded="false"*/}
+                {/*      aria-controls="collapsemore"*/}
+                {/*    >*/}
+                {/*      Load more*/}
+                {/*    </button>*/}
+                {/*  </div>*/}
+                {/*</div>*/}
               </div>
 
               <div className="tab-pane fade" id="tab-4" role="tabpanel">

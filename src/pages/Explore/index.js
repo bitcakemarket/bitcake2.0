@@ -7,6 +7,7 @@ import Paginator from "../../components/Paginator";
 import Axios from "axios";
 import { firestore } from "../../firebase";
 import "styles/explore.css";
+import {updateProfile} from "../../reducers/actions/userAction";
 const breadCrumb = [
 	{title:"Home",page:'/'},
 	{title:"Explorer",page:"/explorer"},
@@ -24,9 +25,8 @@ function Explore() {
   const [cards, setCards] = useState([]);
   const [filterData, setFilter] = useState(cards);
   const [age, setAge] = useState('Newest');
-  const [like, setLike] = useState('Mostliked');
-  const [color, setColor] = useState('Allcolors');
-  const [creator, setCreator] = useState('Verifiedonly');
+  const [like, setLike] = useState('MostLiked');
+  const [creator, setCreator] = useState('VerifiedOnly');
 
   const getNFTList = async () => {
     const res = await firestore.collection("nfts").get()
@@ -34,8 +34,9 @@ function Explore() {
     for (let i = 0; i < res.docs.length; i++)
     {
       let doc = res.docs[i].data()
-        const nftInfo = await Axios.get(doc.tokenURI);
-        lists.push({ id: res.docs[i].id, ...doc, ...nftInfo.data })
+      const nftInfo = await Axios.get(doc.tokenURI);
+      const user = await firestore.collection("users").doc(doc.creatorId).get();
+      lists.push({ id: res.docs[i].id, ...user.data(), ...doc, ...nftInfo.data })
     }
     setCards(lists)
     setFilter(lists);
@@ -53,14 +54,14 @@ function Explore() {
     let input = e.target.value.toLowerCase();
     let filter = [];
     for (var i = 0; i < cards.length; i++) {
-      if (cards[i].title.toLowerCase().includes(input) || cards[i].nickName.toLowerCase().includes(input) || cards[i].currentPrice.toString().includes(input)) {
-          filter.push(cards[i]);
+      if (cards[i].name.toLowerCase().includes(input) || cards[i].nickName.toLowerCase().includes(input) || cards[i].price.toString().includes(input)) {
+        filter.push(cards[i]);
       }
     }
     setFilter(filter);
   }
   const handleSelect = (e) => {
-    switch(e.target.value) {
+    switch(parseInt(e.target.value)) {
       case 1:
         setAge('Newest');
         break;
@@ -68,44 +69,53 @@ function Explore() {
         setAge('Oldest');
         break;
       case 3:
-        setLike('Mostliked');
+        setLike('MostLiked');
         break;
       case 4:
-        setLike('Leastliked');
+        console.log('LeastLiked');
+        setLike('LeastLiked');
         break;
       case 5:
-        setColor('Allcolors');
+        setCreator('VerifiedOnly');
         break;
       case 6:
-        setColor('Black');
-        break;
-      case 7:
-        setColor('Green');
-        break;
-      case 8:
-        setColor('Pink');
-        break;
-      case 9:
-        setColor('Purple');
-        break;
-      case 10:
-        setCreator('Verifiedonly');
-        break;
-      case 11:
         setCreator('All');
         break;
-      case 12:
-        setCreator('MostLiked');
-        break;
-      default: break;      
+      default: break;
     }
   }
   const handleReset = () => {
-    console.log("reseted");
-    setAge('Newest');
-    setLike('Mostliked');
-    setColor('Allcolors');
-    setCreator('Verifiedonly');
+    console.log("reset");
+    console.log('age', age);
+    console.log('price', price);
+    console.log('like', like);
+    console.log('creator', creator);
+    var tempCards = cards;
+    let filterCards = [];
+    // tempCards.sort((a, b) => (a.createdAt > b.createdAt) ? 1 : -1)
+    let maxLikeValue = Math.max.apply(Math, cards.map(function(card) { return card.likes.length; }))
+    let minLikeValue = Math.min.apply(Math, cards.map(function(card) { return card.likes.length; }))
+    for (var i = 0; i < cards.length; i++) {
+      if (parseFloat(cards[i].price) >= 0 && parseFloat(cards[i].price) <= price) {
+        if (like === "MostLiked") {
+          if (cards[i].likes.length === maxLikeValue) {
+            console.log('cards', cards[i]);
+            filterCards.push(cards[i]);
+          }
+        } else if (like === "LeastLiked") {
+          if (cards[i].likes.length === minLikeValue) {
+            filterCards.push(cards[i]);
+          }
+        }
+      }
+    }
+    if (age === "Newest") {
+      filterCards.sort((a, b) => (a.createdAt < b.createdAt) ? 1 : -1)
+    } else if (age === "Oldest") {
+      filterCards.sort((a, b) => (a.createdAt > b.createdAt) ? 1 : -1)
+    }
+    console.log('filterCards', filterCards);
+    setFilter(filterCards);
   }
   return (
 		<main className="main">
@@ -154,6 +164,7 @@ function Explore() {
                 <select
                   name="subcategory"
                   className="explore__select"
+                  onChange={(e)=>handleSelect(e)}
                 >
                   <option value="3">Most liked</option>
                   <option value="4">Least liked</option>
@@ -184,9 +195,8 @@ function Explore() {
                   className="explore__select"
                   onChange={(e)=>handleSelect(e)}
                 >
-                  <option value="10">Verified only</option>
-                  <option value="11">All</option>
-                  <option value="12">Most liked</option>
+                  <option value="5">Verified only</option>
+                  <option value="6">All</option>
                 </select>
               </div>
               <a onClick={()=>handleReset()} className="nft-pointer">

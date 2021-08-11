@@ -31,6 +31,7 @@ function Header(props) {
 
   const { activate, connector, account } = useWeb3React();
 
+  console.log('account', account);
   const connectWallet = async () => {
     await activate(injectedConnector);
   };
@@ -196,12 +197,10 @@ function Header(props) {
 
               {!account ?
                 <a
-                  className="header__action-btn"
+                  className="btn-connect"
                   href="/connect-wallet"
                 >
-                  <span style={{border:'1px solid #c8135a', borderRadius:20, padding:'9px 15px'}}>
-                    Connect Wallet
-                  </span>
+                  Connect Wallet
                 </a>
                 :
                 <a

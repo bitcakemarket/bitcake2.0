@@ -1,9 +1,12 @@
-import React from "react";
+import React, {useEffect} from "react";
 import "styles/connect-wallet.css";
 import 'font-awesome/css/font-awesome.min.css';
 import {useWeb3React, Web3ReactProvider} from "@web3-react/core";
 import {injectedConnector} from "../../components/Header";
 import {Web3Provider} from "@ethersproject/providers";
+import { firestore, auth } from '../../firebase';
+import {useHistory} from "react-router-dom";
+
 
 function getLibrary(provider: any): Web3Provider {
   const library = new Web3Provider(provider)
@@ -16,6 +19,17 @@ function ConnectWallet() {
   const connectWallet = async () => {
     await activate(injectedConnector);
   };
+  const history = useHistory();
+
+
+  useEffect(() => {
+    auth.onAuthStateChanged((user) => {
+      console.log('user', user);
+      if (user == null) {
+        history.push("/signin");
+      }
+    });
+  })
 
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
@@ -31,7 +45,7 @@ function ConnectWallet() {
                 <h1>Connect to your wallet</h1>
               </div>
               <div className="mt-1">
-                Connect with one of available wallet providers <br/> or create a new wallet. <a href="#"> <b>What is a wallet?</b></a>
+                Connect with one of available wallet providers <br/> or create a new wallet.
               </div>
               <div className="mt-5">
                 <div className="row">
@@ -60,7 +74,7 @@ function ConnectWallet() {
             </div>
             <div className="col-4" style={{ marginTop: 230 }}>
               <iframe width="420" height="315"
-                      src="https://www.youtube.com/embed/v=d8IBpfs9bf4&t=5s">
+                      src="https://www.youtube.com/embed/d8IBpfs9bf4">
               </iframe>
             </div>
           </div>

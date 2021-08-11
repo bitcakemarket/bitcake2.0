@@ -32,7 +32,7 @@ function Item(props) {
         </div>
       </li>
       <li>
-        <span>Collection</span>
+        <span>Owner</span>
         <div className="asset__author ">
           <img src={ownerData.avatar} alt=""/>
           <a href="/collection">{ownerData.firstName} {ownerData.lastName}</a>

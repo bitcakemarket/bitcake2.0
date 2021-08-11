@@ -34,13 +34,19 @@ const img = {
 const acceptedList = {
   Audio: "audio/mp3, audio/wav",
   All: "image/*, video/*",
+  Image: 'image/jpeg, image/png, image/gif',
+  Video: "video/mp4"
 };
 
 export default function NFTDropzone(props) {
   const [previewFile, setpreviewFile] = useState();
   const { getRootProps, getInputProps } = useDropzone({
     accept:
-      props.nftType === "Audio"
+      props.nftType === "Video"
+      ? acceptedList["Video"]
+        :props.nftType === "Image"
+        ? acceptedList["Image"]
+        :props.nftType === "Audio"
         ? acceptedList["Audio"]
         : props.nftType === "all"
         ? ""
@@ -62,6 +68,7 @@ export default function NFTDropzone(props) {
         setpreviewFile(file);
       }
     },
+    maxSize: 700 * 1024 * 1024
   });
 
   return (
@@ -75,7 +82,12 @@ export default function NFTDropzone(props) {
           <CloudUploadIcon className="icon-set" />
           <div className="text-set">Add Files</div>
           <div>
-            {props.nftType === "Audio"
+            {
+              props.nftType === "Video"
+              ? acceptedList["Video"]
+              : props.nftType === "Image"
+              ? "Image/jpg, png, gif"
+              :props.nftType === "Audio"
               ? "(audio)"
               : props.nftType === "Collection"
               ? "( collection image )"

@@ -7,14 +7,8 @@ import Tabs from "./Tabs";
 import Card from "components/Card";
 import Countdown from "react-countdown";
 import "styles/activity.css";
-import "./style.css";
 import { firestore } from "../../firebase";
-import Axios from "axios";
-import axios from "axios";
-
-import OwlCarousel from 'react-owl-carousel';
-import 'owl.carousel/dist/assets/owl.carousel.css';
-import 'owl.carousel/dist/assets/owl.theme.default.css';
+import Axios from 'axios';
 
 const breadcrumb = [
   { title: "Home", page: "/" },
@@ -182,48 +176,25 @@ const assetCards = [
     likes: 37,
   },
 ];
-function Item(props) {
+function EditItem(props) {
   const { id } = props.match.params;
   const [price, setPrice] = useState(0);
   const [item, setItem] = useState({});
   const startingBid = 2;
-  const bnbRate = localStorage.getItem('currency');
-  console.log('currency', localStorage.getItem('currency'));
+  const bnbRate = 300;
   const [isProcessing, setIsProcessing] = useState(false)
   const { library, active, account } = useWeb3React();
-
-  const [assetCards, setAssetCards] = useState([]);
 
   const getData = async () => {
     let nft_item = (
       await firestore.collection("nfts").doc(id).get()
     ).data();
-    const nft_info = (await axios.get(nft_item.tokenURI)).data;
+    const nft_info = (await Axios.get(nft_item.tokenURI)).data;
     const owner_info = (await firestore.collection("users").doc(nft_item.ownerId).get()).data()
     console.log(nft_item, nft_info, owner_info)
     setItem({...nft_item, ...nft_info, ...owner_info})
-    console.log('item', item);
   }
-
-  const getNTFLists = async () => {
-    const nfts = await firestore.collection("nfts").get();
-    let user_nfts = [];
-    let nfts_list = [];
-    for (let i = 0; i < nfts.docs.length; i++) {
-      const x = nfts.docs[i];
-      const temp = x.data();
-      const tt = (await axios.get(temp.tokenURI)).data;
-      if (!user_nfts[temp.creatorId]) user_nfts[temp.creatorId] = [];
-      const ite = { id: x.id, ...temp, ...tt };
-      user_nfts[temp.creatorId].push(ite);
-      nfts_list.push(ite);
-    }
-    console.log('nfts_list', nfts_list);
-    setAssetCards(nfts_list);
-  }
-
-  useEffect(async() => {
-    getNTFLists();
+  useEffect(() => {
     if (id === 'image') {
       setItem({
         auctionLength: 0,
@@ -284,13 +255,13 @@ function Item(props) {
     } else if (id === 'video') {
       
     } else {
-      await getData()
+      getData()
     }
   }, [id])
   const renderer = ({ days, hours, minutes, seconds, completed }) => {
     return (
       <div style={{textAlign: 'center', color:'white', marginTop:10, fontSize:18}}>
-        {days < 1 ? "" : days + " Days"} {hours < 10 ? `0${hours}` : hours}:{minutes < 10 ? `0${minutes}` : minutes}:{seconds < 10 ? `0${seconds}` : seconds}
+        {days} Days {hours}:{minutes}:{seconds}
       </div>
     );
   }
@@ -338,8 +309,8 @@ function Item(props) {
 
               <div className="asset__wrap">
                 <div className="asset__timer">
-                  {(item.saleType === 'auction' || item.saleType === 'auctionBuy') &&
-                    <div>
+                  {item.saleType !== 'fix' &&
+                    <>
                       <span>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                           <path d="M18.3,8.59l.91-.9a1,1,0,0,0-1.42-1.42l-.9.91a8,8,0,0,0-9.79,0l-.91-.92A1,1,0,0,0,4.77,7.69l.92.91A7.92,7.92,0,0,0,4,13.5,8,8,0,1,0,18.3,8.59ZM12,19.5a6,6,0,1,1,6-6A6,6,0,0,1,12,19.5Zm-2-15h4a1,1,0,0,0,0-2H10a1,1,0,0,0,0,2Zm3,6a1,1,0,0,0-2,0v1.89a1.5,1.5,0,1,0,2,0Z" />
@@ -347,17 +318,17 @@ function Item(props) {
                         Auction ends in
                       </span>
                       <div className="card__clock">
-                        <Countdown date={item.time} renderer={renderer}/>
+                        <Countdown date={item.time} renderer={renderer} />
                       </div>
-                    </div>
+                    </>
                   }
                 </div>
 
                 <div className="asset__price">
                   <span>Minimum bid</span>
                   <span>
-                    {item.price} BNB <br />
-                    (${parseFloat(item.price) * bnbRate} USD)
+                    0.2 BNB <br />
+                    (${0.2 * bnbRate} USD)
                   </span>
                 </div>
               </div>
@@ -403,19 +374,35 @@ function Item(props) {
 
           {/* <!-- carousel --> */}
           <div className="col-12">
-            {
-              assetCards.length > 0 && (
-                <OwlCarousel className='owl-theme' loop margin={10} nav dots={false} items={4} navText={['<i class="fa fa-arrow-left"></i>', '<i class="fa fa-arrow-right"></i>']}>
+            <div className="main__carousel-wrap">
+              <div
+                className="main__carousel main__carousel--explore owl-carousel"
+                id="explore"
+              >
+                {assetCards.map((card, index) => (
+                  <Card data={card} key={`explore-${index}`} />
+                ))}
+              </div>
 
-                  {assetCards.map((card, index) => (
-                    <Card data={card} key={`explore-${index}`} />
-                  ))}
-
-                </OwlCarousel>
-              )
-            }
-
-
+              <button
+                className="main__nav main__nav--prev"
+                data-nav="#explore"
+                type="button"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M17,11H9.41l3.3-3.29a1,1,0,1,0-1.42-1.42l-5,5a1,1,0,0,0-.21.33,1,1,0,0,0,0,.76,1,1,0,0,0,.21.33l5,5a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42L9.41,13H17a1,1,0,0,0,0-2Z" />
+                </svg>
+              </button>
+              <button
+                className="main__nav main__nav--next"
+                data-nav="#explore"
+                type="button"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M17.92,11.62a1,1,0,0,0-.21-.33l-5-5a1,1,0,0,0-1.42,1.42L14.59,11H7a1,1,0,0,0,0,2h7.59l-3.3,3.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0l5-5a1,1,0,0,0,.21-.33A1,1,0,0,0,17.92,11.62Z" />
+                </svg>
+              </button>
+            </div>
           </div>
           {/* <!-- end carousel --> */}
         </section>
@@ -458,4 +445,4 @@ function Item(props) {
   );
 }
 
-export default Item;
+export default EditItem;

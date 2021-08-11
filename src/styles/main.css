@@ -395,6 +395,39 @@
 a {
   cursor: pointer;
 }
+
+.btn-connect {background-image: linear-gradient(to right, #ED4264 0%, #FFEDBC  51%, #ED4264  100%)}
+.btn-connect {
+  font-size: 11px;
+  padding: 10px 15px;
+  text-align: center;
+  text-transform: uppercase;
+  transition: 0.5s;
+  background-size: 200% auto;
+  color: white;
+  box-shadow: 0 0 5px #eee;
+  border-radius: 10px;
+  display: block;
+}
+
+.btn-connect:hover {
+  background-position: right center; /* change the direction of the change here */
+  color: #fff;
+  text-decoration: none;
+}
+.owl-nav {
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin: 0;
+  font-size: 20px
+}
+.owl-stage {
+  margin-top: 20px;
+}
+.owl-next {
+  margin-left: 10px !important;
+}
 @media (min-width: 768px) {
   .main {
     padding: 0 0 70px;

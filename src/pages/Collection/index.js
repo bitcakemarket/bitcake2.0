@@ -1,212 +1,116 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import AuthorMeta from "../../components/AuthorMeta";
 import Card from "../../components/Card";
 import Paginator from "../../components/Paginator";
 import Collection from "../../components/Collection";
 import "styles/collection.css";
-const author = {
-  avatar: "/assets/img/avatars/avatar.jpg",
-  authorName: "Adam Zapel",
-  nickName: "@aaarthur",
-  code: "XAVUW3sw3ZunitokcLtemEfX3tGuX2plateWdh",
-  text: "All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary",
-  followers: 3829,
-};
-const cards = [
-  {
-    type: "image",
-    image: "assets/img/cover/cover1.jpg",
-    time: "2021-08-07T01:02:03",
-    title: "Walking on Air",
-    avatar: "/assets/img/avatars/avatar5.jpg",
-    nickName: "@nickname",
-    currentPrice: 4.89,
-    verified: true,
-    likes: 189,
-  },
-  {
-    type: "video",
-    image: [
-      "assets/img/cover/cover3.jpg",
-      "assets/img/cover/cover3.jpg",
-      "assets/img/cover/cover3.jpg",
-    ],
-    time: "2021-08-07T01:02:03",
-    title: "Flowers in Concrete (Modal)",
-    avatar: "/assets/img/avatars/avatar15.jpg",
-    nickName: "@min1max",
-    currentPrice: 3.19,
-    verified: false,
-    likes: 37,
-  },
-  {
-    type: "image",
-    image: "assets/img/cover/cover2.jpg",
-    time: "2021-08-07T01:02:03",
-    title: "Les Immortels, the Treachery of Artificial Shadows",
-    avatar: "/assets/img/avatars/avatar3.jpg",
-    nickName: "@neo",
-    currentPrice: 2.61,
-    verified: false,
-    likes: 702,
-  },
-  {
-    type: "image",
-    image: "assets/img/cover/cover3.jpg",
-    time: "2021-08-07T01:02:03",
-    title: "Flowers in Concrete (Modal)",
-    avatar: "/assets/img/avatars/avatar15.jpg",
-    nickName: "@min1max",
-    currentPrice: 3.19,
-    verified: true,
-    likes: 37,
-  },
-  {
-    type: "video",
-    image: "assets/img/cover/cover3.jpg",
-    time: "2021-08-07T01:02:03",
-    title: "Flowers in Concrete (Modal)",
-    avatar: "/assets/img/avatars/avatar15.jpg",
-    nickName: "@min1max",
-    currentPrice: 3.19,
-    verified: true,
-    likes: 37,
-  },
-  {
-    type: "image",
-    image: "assets/img/cover/cover3.jpg",
-    time: "2021-08-07T01:02:03",
-    title: "Flowers in Concrete (Modal)",
-    avatar: "/assets/img/avatars/avatar15.jpg",
-    nickName: "@min1max",
-    currentPrice: 3.19,
-    verified: true,
-    likes: 37,
-  },
-];
-const collections = [
-  {
-    bgimage: "assets/img/bg/bg-small.png",
-    avatar: "/assets/img/avatars/avatar3.jpg",
-    name: "Hashmasks",
-    number: "ERC-721",
-    verified: true,
-  },
-  {
-    bgimage: "assets/img/bg/bg-small.png",
-    avatar: "/assets/img/avatars/avatar3.jpg",
-    name: "Hashmasks",
-    number: "ERC-721",
-    verified: true,
-  },
-  {
-    bgimage: "assets/img/bg/bg-small.png",
-    avatar: "/assets/img/avatars/avatar3.jpg",
-    name: "Hashmasks",
-    number: "ERC-721",
-    verified: false,
-  },
-  {
-    bgimage: "assets/img/bg/bg-small.png",
-    avatar: "/assets/img/avatars/avatar3.jpg",
-    name: "Hashmasks",
-    number: "ERC-721",
-    verified: true,
-  },
-  {
-    bgimage: "assets/img/bg/bg-small.png",
-    avatar: "/assets/img/avatars/avatar3.jpg",
-    name: "Hashmasks",
-    number: "ERC-721",
-    verified: false,
-  },
-  {
-    bgimage: "assets/img/bg/bg-small.png",
-    avatar: "/assets/img/avatars/avatar3.jpg",
-    name: "Hashmasks",
-    number: "ERC-721",
-    verified: true,
-  },
-  {
-    bgimage: "assets/img/bg/bg-small.png",
-    avatar: "/assets/img/avatars/avatar3.jpg",
-    name: "Hashmasks",
-    number: "ERC-721",
-    verified: true,
-  },
-];
+import {auth, firestore} from "../../firebase";
+import {useHistory, useParams} from "react-router-dom";
+import {useWeb3React} from "@web3-react/core";
+import Axios from "axios";
+
 function CollectionPage() {
+  const { id } = useParams();
+  const [user, setUser] = useState({});
+  const history = useHistory();
+  const { account } = useWeb3React();
+  const [cards, setCards] = useState([]);
+  const [collection, setCollection] = useState({});
+  const getProfile = async () => {
+    let currentCollection = (
+      await firestore.collection("collections").doc(id).get()
+    ).data();
+    setCollection(currentCollection);
+    let user = await firestore.collection("users").doc(currentCollection.creatorId).get();
+    let userProfile = user.data();
+    const temp = { id: user.id, ...userProfile };
+    setUser(temp);
+  };
+
+  const getCards = async () => {
+    const res = await firestore.collection("nfts").get()
+    let lists = []
+    for (let i = 0; i < res.docs.length; i++)
+    {
+      let doc = res.docs[i].data();
+      const nftInfo = await Axios.get(doc.tokenURI);
+      if (doc.collection === id) {
+        lists.push({ id: res.docs[i].id, ...user, ...doc, ...nftInfo.data })
+      }
+    }
+    setCards(lists);
+  }
+
+  useEffect(async () => {
+    await getCards();
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        getProfile();
+      } else {
+        history.push("/signin");
+      }
+    });
+
+  }, [account])
   return (
     <main className="main">
-      <div className="main__author" data-bg="assets/img/bg/bg.png"></div>
+      <div className="main__author" data-bg="assets/img/home/bg.gif">
+        <img src={user.imageCover} width="100%" height="100%" alt="" />
+      </div>
       <div className="container">
         <div className="row row--grid">
-          <div className="col-12 col-xl-3">
-            <div className="author author--page">
-              <AuthorMeta data={author} />
-            </div>
-          </div>
+          {/*<div className="col-12 col-xl-3">*/}
+          {/*  <div className="author author--page">*/}
+          {/*    <AuthorMeta data={user} code={account}  />*/}
+          {/*  </div>*/}
+          {/*</div>*/}
 
-          <div className="col-12 col-xl-9">
+          <div className="col-12 col-xl-12">
+            <div className="main__title">
+              <h2>{collection.name}</h2>
+            </div>
             <div className="row row--grid">
               {cards.map((card, index) => (
-                <div className="col-12 col-sm-6 col-lg-4" key={`card-${index}`}>
+                index < 4 && (
+                <div className="col-12 col-sm-6 col-lg-3" key={`card-${index}`}>
                   <Card data={card} />
                 </div>
+                )
               ))}
             </div>
-
-            {/* paginator */}
-            <Paginator />
-            {/* end paginator */}
+            <div className="row row--grid collapse" id="collapsemore">
+              {cards.map(
+                (card, index) =>
+                  index >= 6 && (
+                    <div
+                      className="col-12 col-sm-6 col-lg-4"
+                      key={`card-${index}`}
+                    >
+                      <Card data={card} />
+                    </div>
+                  )
+              )}
+            </div>
+            <div className="row row--grid">
+              <div className="col-12">
+                <button
+                  className="main__load"
+                  type="button"
+                  data-toggle="collapse"
+                  data-target="#collapsemore"
+                  aria-expanded="false"
+                  aria-controls="collapsemore"
+                >
+                  Load more
+                </button>
+              </div>
+            </div>
           </div>
+          {/* collapse */}
+
+
         </div>
 
-        {/* collections */}
-        <section className="row row--grid">
-          {/* title */}
-          <div className="col-12">
-            <div className="main__title">
-              <h2>Hot collections</h2>
-            </div>
-          </div>
-          {/* end title */}
-
-          {/* carousel */}
-          <div className="col-12">
-            <div className="main__carousel-wrap">
-              <div
-                className="main__carousel main__carousel--collections owl-carousel"
-                id="collections"
-              >
-                {collections.map((collection, index) => (
-                  <Collection data={collection} key={`collection-${index}`} />
-                ))}
-              </div>
-
-              <button
-                className="main__nav main__nav--prev"
-                data-nav="#collections"
-                type="button"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <path d="M17,11H9.41l3.3-3.29a1,1,0,1,0-1.42-1.42l-5,5a1,1,0,0,0-.21.33,1,1,0,0,0,0,.76,1,1,0,0,0,.21.33l5,5a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42L9.41,13H17a1,1,0,0,0,0-2Z" />
-                </svg>
-              </button>
-              <button
-                className="main__nav main__nav--next"
-                data-nav="#collections"
-                type="button"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <path d="M17.92,11.62a1,1,0,0,0-.21-.33l-5-5a1,1,0,0,0-1.42,1.42L14.59,11H7a1,1,0,0,0,0,2h7.59l-3.3,3.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0l5-5a1,1,0,0,0,.21-.33A1,1,0,0,0,17.92,11.62Z" />
-                </svg>
-              </button>
-            </div>
-          </div>
-          {/* end carousel */}
-        </section>
-        {/* end collections */}
       </div>
     </main>
   );

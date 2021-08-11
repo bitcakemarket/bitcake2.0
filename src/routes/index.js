@@ -22,6 +22,7 @@ import Forgot from "pages/ForgotPassword";
 import Error from "pages/404";
 import Privacy from "pages/Privacy";
 import ConnectWallet from "pages/ConnectWallet";
+import EditAsset from "pages/EditAsset";
 
 function Routes(props) {
   return (
@@ -33,13 +34,14 @@ function Routes(props) {
           <Route path="/explore" component={Explore} />
           <PrivateRoute path="/activity" component={Activity} />
           <Route path="/item/:id" component={Asset} />
+          <Route path="/edit-item/:id" component={EditAsset} />
           <Route path="/token" component={Token} />
           <Route path="/blog" component={Blog} />
           <Route path="/faq" component={Faq} />
           <Route path="/contacts" component={Contact} />
           <Route path="/creators" component={Authors} />
           <Route path="/creator/:id" component={Creator} />
-          <Route path="/collection" component={Collection} />
+          <Route path="/collection/:id" component={Collection} />
           <Route
             authenticated={props.authenticated}
             path="/create"

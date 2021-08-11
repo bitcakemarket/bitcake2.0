@@ -21,8 +21,9 @@ function Card(props) {
     saleType,
     verified,
     likes,
+    name
   } = props.data;
-  // const time = auctionLength === 0 ? null : auctionLength * 3600
+
   const [ownerAvatar, setOwnerAvatar] = useState("/assets/img/avatars/avatar.jpg")
   const [nickName, setNickName] = useState("@unkown")
   const [follow, setFollow] = useState(likes)
@@ -35,6 +36,11 @@ function Card(props) {
   }
 
   const increaseLikes = () => {
+    if (auth.currentUser == null) {
+      toast.error('You need to logged in before make likes')
+      return
+    }
+
     if (follow.includes(auth.currentUser.uid)) {
       toast.error('You already liked this NFT')
       return
@@ -123,7 +129,7 @@ function Card(props) {
       </Link>
     }
     <h3 className="card__title">
-      <Link to={`/item/${id?id:type}`}>{title}</Link>
+      <Link to={`/item/${id?id:type}`}>{name}</Link>
     </h3>
     <div className={`card__author ${verified?'card__author--verified':''}`}>
         <img src={ownerAvatar} alt="" />

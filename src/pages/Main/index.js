@@ -6,11 +6,14 @@ import { firestore } from "../../firebase";
 
 import "styles/main.css";
 import axios from "axios";
+import OwlCarousel from "react-owl-carousel";
 
 function Main() {
   const [userLists, setUserLists] = useState([]);
   const [sellerLists, setSellerLists] = useState([]);
   const [nfts, setNfts] = useState([]);
+  const [collections, setCollections] = useState([]);
+  const [currency, setCurrency] = useState(0.0);
 
   const getNFTLists = async () => {
     const nfts = await firestore.collection("nfts").get();
@@ -25,6 +28,7 @@ function Main() {
       user_nfts[temp.creatorId].push(ite);
       nfts_list.push(ite);
     }
+    console.log('nfts_list', nfts_list);
     setNfts(nfts_list);
     console.log(nfts_list.filter((x) => x.isSale && x.saleType !== "fix"));
     let temp = Object.keys(user_nfts).map((x) => ({
@@ -49,8 +53,90 @@ function Main() {
     }
     setSellerLists(users_info);
   };
-  useEffect(() => {
-    getNFTLists();
+
+  const getCollections = async () => {
+    const currentCollections = await firestore.collection('collections').get()
+    var temp = [];
+    for (var i = 0; i < currentCollections.docs.length; i++) {
+      var dataTemp = currentCollections.docs[i].data();
+      dataTemp.id = currentCollections.docs[i].id;
+      temp.push(dataTemp);
+    }
+    setCollections(temp);
+    console.log('collections', collections);
+  }
+
+
+  const query = `{
+    ethereum(network: bsc) {
+      dexTrades(
+        baseCurrency: {is: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"}
+        quoteCurrency: {is: "0x55d398326f99059ff775485246999027b3197955"}
+        options: {desc: ["block.height", "transaction.index"], limit: 1}
+      ) {
+        block {
+          height
+          timestamp {
+            time(format: "%Y-%m-%d %H:%M:%S")
+          }
+        }
+        transaction {
+          index
+        }
+        baseCurrency {
+          symbol
+        }
+        quoteCurrency {
+          symbol
+        }
+        quotePrice
+      }
+    }
+  }`;
+  function sendRequest(query) {
+    return new Promise((resolve, reject) => {
+      fetch("https://graphql.bitquery.io/", {
+        method: "POST",
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify({
+          query: query,
+          variables: "{}"
+        }),
+      })
+        .then(response => response.json())
+        .then(json => {
+          resolve(json.data)
+        })
+        .catch(() => {
+          reject()
+        })
+    })
+  }
+
+  useEffect(async () => {
+    await getNFTLists();
+    await getCollections();
+    sendRequest(query).then(function(resp) {
+      if (resp.ethereum.dexTrades) {
+        if (resp.ethereum.dexTrades.length > 0) {
+          setCurrency(resp.ethereum.dexTrades[0]['quotePrice'].toFixed(2));
+          console.log('resp.ethereum.dexTrades', resp.ethereum.dexTrades);
+          console.log('currencyCurrency', resp.ethereum.dexTrades[0]['quotePrice'].toFixed(2));
+          localStorage.setItem('currency', resp.ethereum.dexTrades[0]['quotePrice'].toFixed(2));
+          console.log("currency", localStorage.getItem('currency'));
+        } else {
+          setCurrency(340);
+          localStorage.setItem('currency', 340);
+        }
+      } else {
+        setCurrency(340);
+        localStorage.setItem('currency', 340);
+      }
+    });
   }, []);
   return (
     <main className="main">
@@ -100,34 +186,14 @@ function Main() {
 
           {/* <!-- carousel --> */}
           <div className="col-12">
-            <div className="main__carousel-wrap  my__caro">
-              <div className="main__carousel my__card">
-                {nfts
-                  .filter((x) => x.isSale && x.saleType !== "fix")
-                  .map(
-                    (card, index) =>
-                      index < 4 && <Card data={card} key={`card-${index}`} />
-                  )}
-              </div>
-              <button
-                className="main__nav main__nav--prev"
-                data-nav="#live"
-                type="button"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <path d="M17,11H9.41l3.3-3.29a1,1,0,1,0-1.42-1.42l-5,5a1,1,0,0,0-.21.33,1,1,0,0,0,0,.76,1,1,0,0,0,.21.33l5,5a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42L9.41,13H17a1,1,0,0,0,0-2Z" />
-                </svg>
-              </button>
-              <button
-                className="main__nav main__nav--next"
-                data-nav="#live"
-                type="button"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <path d="M17.92,11.62a1,1,0,0,0-.21-.33l-5-5a1,1,0,0,0-1.42,1.42L14.59,11H7a1,1,0,0,0,0,2h7.59l-3.3,3.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0l5-5a1,1,0,0,0,.21-.33A1,1,0,0,0,17.92,11.62Z" />
-                </svg>
-              </button>
-            </div>
+            <OwlCarousel className='owl-theme'  loop={false} margin={10} nav dots={false} items={4} navText={['<i class="fa fa-arrow-left"></i>', '<i class="fa fa-arrow-right"></i>']}>
+              {nfts
+                .filter((x) => x.isSale && x.saleType !== "fix")
+                .map(
+                  (card, index) =>
+                    <Card data={card} key={`card-${index}`} />
+                )}
+            </OwlCarousel>
           </div>
           {/* <!-- end carousel --> */}
         </section>
@@ -175,34 +241,14 @@ function Main() {
 
           {/* <!-- carousel --> */}
           <div className="col-12">
-            <div className="main__carousel-wrap  my__caro">
-              <div className="main__carousel my__card">
-                {nfts
-                  .filter((x) => x.isSale && x.saleType === "fix")
-                  .map(
-                    (card, index) =>
-                      index < 4 && <Card data={card} key={`card-${index}`} />
-                  )}
-              </div>
-              <button
-                className="main__nav main__nav--prev"
-                data-nav="#live"
-                type="button"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <path d="M17,11H9.41l3.3-3.29a1,1,0,1,0-1.42-1.42l-5,5a1,1,0,0,0-.21.33,1,1,0,0,0,0,.76,1,1,0,0,0,.21.33l5,5a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42L9.41,13H17a1,1,0,0,0,0-2Z" />
-                </svg>
-              </button>
-              <button
-                className="main__nav main__nav--next"
-                data-nav="#live"
-                type="button"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <path d="M17.92,11.62a1,1,0,0,0-.21-.33l-5-5a1,1,0,0,0-1.42,1.42L14.59,11H7a1,1,0,0,0,0,2h7.59l-3.3,3.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0l5-5a1,1,0,0,0,.21-.33A1,1,0,0,0,17.92,11.62Z" />
-                </svg>
-              </button>
-            </div>
+            <OwlCarousel className='owl-theme' loop={false} margin={10} nav dots={false} items={4} navText={['<i class="fa fa-arrow-left"></i>', '<i class="fa fa-arrow-right"></i>']}>
+              {nfts
+                .filter((x) => x.isSale && x.saleType === "fix")
+                .map(
+                  (card, index) =>
+                    <Card data={card} key={`card-${index}`} />
+                )}
+            </OwlCarousel>
           </div>
           {/* <!-- end carousel --> */}
         </section>
@@ -220,20 +266,13 @@ function Main() {
 
           {/* <!-- carousel --> */}
           <div className="col-12">
-            <div className="main__carousel-wrap">
-              <div className="main__carousel my__card">
-
-                {nfts
-                  .map(
-                    (hotcard, index) =>
-                      index < 5 && <HotCard data={hotcard} key={`card-${index}`} />
-                  )}
-
-              </div>
-
-              <button className="main__nav main__nav--prev" data-nav="#collections" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17,11H9.41l3.3-3.29a1,1,0,1,0-1.42-1.42l-5,5a1,1,0,0,0-.21.33,1,1,0,0,0,0,.76,1,1,0,0,0,.21.33l5,5a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42L9.41,13H17a1,1,0,0,0,0-2Z"/></svg></button>
-              <button className="main__nav main__nav--next" data-nav="#collections" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.92,11.62a1,1,0,0,0-.21-.33l-5-5a1,1,0,0,0-1.42,1.42L14.59,11H7a1,1,0,0,0,0,2h7.59l-3.3,3.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0l5-5a1,1,0,0,0,.21-.33A1,1,0,0,0,17.92,11.62Z"/></svg></button>
-            </div>
+            <OwlCarousel className='owl-theme' mouseDrag={false} loop={false} margin={10} nav dots={false} items={5} navText={['<i class="fa fa-arrow-left"></i>', '<i class="fa fa-arrow-right"></i>']}>
+              {collections
+                .map(
+                  (hotcard, index) =>
+                    <HotCard data={hotcard} key={`card-${index}`} />
+                )}
+            </OwlCarousel>
           </div>
           {/* <!-- end carousel --> */}
         </section>

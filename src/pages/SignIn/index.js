@@ -36,7 +36,7 @@ function SignIn() {
               "Email does not verified yet. please verify your email"
             );
           } else {
-            history.push("/");
+            history.push("/connect-wallet");
           }
         })
         .catch((error) => {
@@ -104,7 +104,7 @@ function SignIn() {
                 </form>
                 {/* end authorization form */}
               </div>
-            </div>w
+            </div>
           </div>
           {/* end sign in */}
         </div>

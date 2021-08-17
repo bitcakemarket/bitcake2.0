@@ -24,19 +24,18 @@ function ConnectWallet() {
 
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
-      console.log('user', user);
       if (user == null) {
         history.push("/signin");
       }
     });
-  })
+  }, [])
 
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
       <main className="main">
         <div className="container">
           <div className="row">
-            <div className="col-8" style={{ marginTop: 180 }}>
+            <div className="col-md-8 connect-wallet-pg">
               <a href="/">
                 <i className="fa fa-arrow-left"></i>
                 <span className="ml-3"><b>Go Back</b></span>
@@ -50,20 +49,28 @@ function ConnectWallet() {
               <div className="mt-5">
                 <div className="row">
                   <div className="col-5 ">
-                    <a onClick={connectWallet} className="btn-connect-wallet">
-                      <img src="/assets/img/metamask.svg" style={{ width: 30 }} />
-                      <h3 className="mt-1">Metamask</h3>
-                      <span>One of the most secure<br/> wallets with great flexibility</span>
-                    </a>
+                    <div className="btn-connect-wallet">
+                      <div onClick={connectWallet} style={{ cursor: "pointer" }}>
+                        <img src="/assets/img/metamask.svg" style={{ width: 30 }} />
+                        <h3 className="mt-1">Metamask</h3>
+                        <span>One of the most secure<br/> wallets with great flexibility.</span>
+                      </div>
+                      <br/>
+                      <span>If you do not have a MetaMask Wallet, sign up here <a href="https://metamask.io" target="_blank">https://metamask.io</a></span>
+                    </div>
                   </div>
                   <div className="col-5">
-                    <a href="#" className="btn-connect-wallet">
-                      <img src="/assets/img/rainbow.png" style={{ width: 30 }} />
-                      <img src="/assets/img/trust.png" className="ml-2" style={{ width: 30 }} />
-                      <img src="/assets/img/argent.png" className="ml-2" style={{ width: 30 }} />
-                      <h3 className="mt-1">WalletConnection</h3>
-                      <span>Connect with Rainbow, Trust,<br/>Argent and more</span>
-                    </a>
+                    <div className="btn-connect-wallet">
+                      <div>
+                        <img src="/assets/img/rainbow.png" style={{ width: 30 }} />
+                        <img src="/assets/img/trust.png" className="ml-2" style={{ width: 30 }} />
+                        <img src="/assets/img/argent.png" className="ml-2" style={{ width: 30 }} />
+                        <h3 className="mt-1">WalletConnection</h3>
+                        <span>Connect with Rainbow, Trust,<br/>Argent and more.</span><br/>
+                      </div>
+                      <br/>
+                      <span>If you do not have a WalletConnect account, sign up here <a href="https://walletconnect.org" target="_blank">https://walletconnect.org</a></span>
+                    </div>
                   </div>
                 </div>
                 <div className="mt-5">
@@ -72,8 +79,8 @@ function ConnectWallet() {
                 </div>
               </div>
             </div>
-            <div className="col-4" style={{ marginTop: 230 }}>
-              <iframe width="420" height="315"
+            <div className="col-md-4 connect-wallet-video-pg">
+              <iframe className="connect-wallet-video"
                       src="https://www.youtube.com/embed/d8IBpfs9bf4">
               </iframe>
             </div>

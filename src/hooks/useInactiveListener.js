@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useWeb3React } from "@web3-react/core";
 
 import { injected } from "connectors";
+import {auth, firestore} from "../firebase";
 
 export function useInactiveListener(suppress = false) {
   const { active, error, activate } = useWeb3React();
@@ -19,6 +20,12 @@ export function useInactiveListener(suppress = false) {
 
       const handleAccountsChanged = async (accounts) => {
         console.log("accountsChanged", accounts);
+        console.log('auth.currentUser.id', auth.currentUser.uid);
+        firestore.collection("users").doc(auth.currentUser.uid).update({
+          wallet: accounts[0]
+        }).then(() => {
+
+        });
         if (accounts.length > 0) {
           await activate(injected);
         }

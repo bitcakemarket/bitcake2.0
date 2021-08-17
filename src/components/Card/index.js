@@ -20,13 +20,12 @@ function Card(props) {
     id,
     saleType,
     verified,
-    likes,
     name
   } = props.data;
 
   const [ownerAvatar, setOwnerAvatar] = useState("/assets/img/avatars/avatar.jpg")
   const [nickName, setNickName] = useState("@unkown")
-  const [follow, setFollow] = useState(likes)
+  const [likes, setLikes] = useState(props.data.likes)
   const getAvatar = async () => {
     const url = (await firestore.collection("users").doc(ownerId).get()).data()
     if (url) {
@@ -41,7 +40,7 @@ function Card(props) {
       return
     }
 
-    if (follow.includes(auth.currentUser.uid)) {
+    if (likes.includes(auth.currentUser.uid)) {
       toast.error('You already liked this NFT')
       return
     }
@@ -49,10 +48,22 @@ function Card(props) {
       toast.error('You are a creator')
       return
     }
-    const temp = [...follow, auth.currentUser.uid]
+    const temp = [...likes, auth.currentUser.uid]
     firestore.collection("nfts").doc(id).update({ likes: temp }).then(() => {
-      setFollow(temp)
-      toast.success('You follow NFT')
+      setLikes(temp)
+      toast.success('You likes NFT');
+
+      firestore.collection("activities").doc().set({
+        owner: auth.currentUser.uid,
+        title: "Like",
+        method: "like",
+        nickName: nickName,
+        cover: image,
+        createdAt: new Date()
+      }).then(() => {
+
+      });
+
     }).catch(err => {
       toast.error(err)
     })
@@ -145,7 +156,7 @@ function Card(props) {
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path d="M20.16,5A6.29,6.29,0,0,0,12,4.36a6.27,6.27,0,0,0-8.16,9.48l6.21,6.22a2.78,2.78,0,0,0,3.9,0l6.21-6.22A6.27,6.27,0,0,0,20.16,5Zm-1.41,7.46-6.21,6.21a.76.76,0,0,1-1.08,0L5.25,12.43a4.29,4.29,0,0,1,0-6,4.27,4.27,0,0,1,6,0,1,1,0,0,0,1.42,0,4.27,4.27,0,0,1,6,0A4.29,4.29,0,0,1,18.75,12.43Z" />
           </svg>
-          <span>{follow.length}</span>
+          <span>{likes.length}</span>
         </button>
       </div>
     </div>

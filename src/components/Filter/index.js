@@ -1,6 +1,54 @@
-import React from "react";
+import React, {useState} from "react";
 import "./style.css";
-function Filter() { 
+function Filter(props) {
+  const [listings, setListings] = useState(true);
+  const [purchases, setPurchases] = useState(true);
+  const [transfers, setTransfers] = useState(true);
+  const [bids, setBids] = useState(true);
+  const [likes, setLikes] = useState(true);
+  const [followings, setFollowings] = useState(true);
+
+  const changeFilters = (filter) => {
+    let filters = {
+      listings: listings,
+      purchases: purchases,
+      transfers: transfers,
+      bids: bids,
+      likes: likes,
+      followings: followings,
+    }
+    switch (filter) {
+      case "listings":
+        filters[filter] = !listings;
+        setListings(!listings);
+        break;
+      case "purchases":
+        filters[filter] = !purchases;
+        setPurchases(!purchases);
+        break;
+      case "transfers":
+        filters[filter] = !transfers;
+        setTransfers(!transfers);
+        break;
+      case "bids":
+        filters[filter] = !bids;
+        setBids(!bids);
+        break;
+      case "likes":
+        filters[filter] = !likes;
+        setLikes(!likes);
+        break;
+      case "followings":
+        filters[filter] = !followings;
+        setFollowings(!followings);
+        break;
+      default:
+        break;
+    }
+
+    props.onChangeFilter(filters);
+
+  }
   return(
     <div className="filter filter--sticky">
       <h4 className="filter__title">Filters <button type="button">Clear all</button></h4>
@@ -8,32 +56,34 @@ function Filter() {
       <div className="filter__group">
         <ul className="filter__checkboxes">
           <li>
-            <input id="type5" type="checkbox" name="type5" defaultChecked/>
-            <label htmlFor="type5">Listings</label>
+            <input id="listingFilter" type="checkbox" name="listingFilter" checked={listings}
+                   onChange={(e) => changeFilters("listings")}/>
+            <label htmlFor="listingFilter">Listings</label>
           </li>
           <li>
-            <input id="type6" type="checkbox" name="type6"/>
-            <label htmlFor="type6">Purchases</label>
+            <input id="purchasesFilter" type="checkbox" name="purchasesFilter" checked={purchases}
+                   onChange={(e) => changeFilters("purchases")}/>
+            <label htmlFor="purchasesFilter">Purchases</label>
           </li>
           <li>
-            <input id="type7" type="checkbox" name="type7" defaultChecked/>
-            <label htmlFor="type7">Sales</label>
+            <input id="transfersFilter" type="checkbox" name="transfersFilter" checked={transfers}
+                   onChange={(e) => changeFilters("transfers")}/>
+            <label htmlFor="transfersFilter">Transfers</label>
           </li>
           <li>
-            <input id="type8" type="checkbox" name="type8" defaultChecked/>
-            <label htmlFor="type8">Transfers</label>
+            <input id="bidsFilter" type="checkbox" name="bidsFilter" checked={bids}
+                   onChange={(e) => changeFilters("bids")}/>
+            <label htmlFor="bidsFilter">Bids</label>
           </li>
           <li>
-            <input id="type9" type="checkbox" name="type9" />
-            <label htmlFor="type9">Bids</label>
+            <input id="likesFilter" type="checkbox" name="likesFilter" checked={likes}
+                   onChange={(e) => changeFilters("likes")}/>
+            <label htmlFor="likesFilter">Likes</label>
           </li>
           <li>
-            <input id="type10" type="checkbox" name="type10" />
-            <label htmlFor="type10">Likes</label>
-          </li>
-          <li>
-            <input id="type11" type="checkbox" name="type11" />
-            <label htmlFor="type11">Followings</label>
+            <input id="followingsFilter" type="checkbox" name="followingsFilter" checked={followings}
+                   onChange={(e) => changeFilters("followings")}/>
+            <label htmlFor="followingsFilter">Followings</label>
           </li>
         </ul>
       </div>

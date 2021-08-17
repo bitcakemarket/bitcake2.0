@@ -101,7 +101,7 @@
   font-weight: 500;
 }
 .asset__action p a:hover {
-  color:  #c51458;
+  color:  #f2ad07;
 }
 .asset__action p b {
   font-weight: 500;
@@ -143,7 +143,7 @@
   right: 0;
   height: 2px;
   display: block;
-  background-color: #c51458;
+  background-color: #f2ad07;
   transition: 0.5s ease;
   transform: translateY(2px);
   opacity: 0;
@@ -200,15 +200,15 @@
   margin-right: 0;
 }
 .asset__btn:hover {
-  color:  #c51458;
+  color:  #f2ad07;
 }
 .asset__btn--clr {
-  background-color: #c51458;
+  background-color: #f2ad07;
   color: #fff;
 }
 .asset__btn--clr:hover {
   background-color: #222227;
-  color:  #c51458;
+  color:  #f2ad07;
 }
 .asset__btn--full {
   width: 100%;
@@ -309,7 +309,7 @@
   width: 20px;
   height: auto;
   margin-right: 5px;
-  fill:  #c51458;
+  fill:  #f2ad07;
 }
 .asset__clock {
   font-size: 18px;

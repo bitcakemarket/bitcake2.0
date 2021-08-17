@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useRef, useState} from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import PrivateRoute from "components/PrivateRoute";
 import Footer from "components/Footer";
@@ -32,7 +32,7 @@ function Routes(props) {
         <Switch>
           <Route exact path="/" component={Main} />
           <Route path="/explore" component={Explore} />
-          <PrivateRoute path="/activity" component={Activity} />
+          <Route path="/activity" component={Activity} />
           <Route path="/item/:id" component={Asset} />
           <Route path="/edit-item/:id" component={EditAsset} />
           <Route path="/token" component={Token} />

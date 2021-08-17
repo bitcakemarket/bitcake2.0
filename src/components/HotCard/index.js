@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import './style.css';
 import {auth, firestore} from "../../firebase";
 import {toast} from "react-toastify";
-import { Link } from "react-router-dom";
+import {Link, useHistory} from "react-router-dom";
 
 import $ from "jquery";
 import ipfs from "../../utils/ipfsApi";
@@ -13,6 +13,9 @@ function HotCard(props) {
     name,
     id
   } = props.data;
+
+  const {editable} = props.editable;
+  const history = useHistory();
 
   const [coverImage, setCoverImage] = useState(props.data.coverImage);
   const [image, setImage] = useState(props.data.image);
@@ -73,11 +76,21 @@ function HotCard(props) {
     }
   }
   const handleCoverImage = () => {
-    $('#cover-image-' + id).click();
+    console.log('editable', editable);
+    if (editable) {
+      $('#cover-image-' + id).click();
+    } else {
+      history.push('/collection/' + id);
+    }
   }
 
   const handleCollectionImage = () => {
-    $('#collection-image-' + id).click();
+    console.log('editable', editable);
+    if (editable) {
+      $('#collection-image-' + id).click();
+    } else {
+      history.push('/collection/' + id);
+    }
   }
 
   useEffect(() => {

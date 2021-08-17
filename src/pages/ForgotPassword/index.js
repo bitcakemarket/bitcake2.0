@@ -1,12 +1,28 @@
-import React from "react";
+import React, {useState} from "react";
 import BreadCrumb from "components/BreadCrumb";
 import "styles/auth.css";
+import {auth} from "../../firebase";
+import {toast} from "react-toastify";
 const breadCrumb = [
   { title: "Home", page: "/" },
   { title: "Restore Password", page: "/" },
 ];
 
 function Forgot(props) {
+  const [emailAddr, setEmailAddr] = useState("");
+
+  const handleEmail = (value) => {
+    setEmailAddr(value);
+  }
+  const forgotPassword = () => {
+    auth.sendPasswordResetEmail(emailAddr)
+      .then(function () {
+        toast.success("Please check your email...");
+      }).catch(function (e) {
+        toast.success(e);
+    })
+  }
+
   return (
     <main className="main">
       <div className="container">
@@ -30,6 +46,7 @@ function Forgot(props) {
                         type="text"
                         className="sign__input"
                         placeholder="Email"
+                        onChange={(e) => handleEmail(e.target.value)}
                       />
                     </div>
 
@@ -43,7 +60,7 @@ function Forgot(props) {
                       <label htmlFor="remember">
                         I agree to the{" "}
                         <a
-                          href="assets/terms/BitCakeTermsOfService.pdf"
+                          href="assets/terms/CollectorsMint.pdf"
                           target="_blank"
                         >
                           Terms of Service
@@ -51,7 +68,7 @@ function Forgot(props) {
                       </label>
                     </div>
 
-                    <button className="sign__btn" type="button">
+                    <button className="sign__btn" type="button" onClick={forgotPassword}>
                       Send
                     </button>
 

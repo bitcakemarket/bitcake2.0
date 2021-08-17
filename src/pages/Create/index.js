@@ -54,6 +54,7 @@ function Create() {
   const [isCopyright, setIsCopyright] = useState(false);
   const [originalCreator, setOriginalCreator] = useState(false);
   const [collections, setCollections] = useState([]);
+  const [authorVerify, setAuthorVerify] = useState(false);
 
   const { library, active, account } = useWeb3React();
   const history = useHistory();
@@ -116,7 +117,6 @@ function Create() {
   }
 
   useEffect(() => {
-    console.log('currentUser', auth.currentUser);
     getCollections();
     sendRequest(query).then(function(resp) {
       console.log('sendRequest', resp.ethereum.dexTrades);
@@ -135,6 +135,9 @@ function Create() {
     });
     auth.onAuthStateChanged((user) => {
       if (user) {
+        if (!active) {
+          history.push("/connect-wallet");
+        }
         getProfile(user);
       } else {
         history.push("/signin");
@@ -147,6 +150,7 @@ function Create() {
       await firestore.collection("users").doc(user.uid).get()
     ).data();
     const temp = { id: user.uid, email: user.email, ...userProfile };
+    console.log('setUser', temp);
     setUser(temp);
   };
 
@@ -265,8 +269,11 @@ function Create() {
   };
 
   const createNFT = async () => {
+    if (!authorVerify) {
+      toast.error("Please ensure you are the author of the copyrighted work and/or you are authorized to sell this item");
+      return
+    }
     try {
-      console.log('account', account);
       if (account) {
         await library
           .getSigner(account)
@@ -313,7 +320,6 @@ function Create() {
                 owner: account,
                 creator: account,
                 price,
-                isSale,
                 saleType,
                 collection: collection,
                 auctionLength: saleType !== "fix" ? parseInt(auctionLength) : 0,
@@ -323,7 +329,17 @@ function Create() {
               .then(() => {
                 toast.success("Create NFT");
                 setCreateProcess(false);
-                history.push(`/creator/${user.id}`);
+                firestore.collection("activities").doc().set({
+                  owner: auth.currentUser.uid,
+                  title: "List",
+                  method: "list",
+                  nickName: user.nickName,
+                  cover: `https://ipfs.io/ipfs/${result[0].hash}`,
+                  bnbPrice: price,
+                  createdAt: new Date()
+                }).then(() => {
+                  history.push(`/creator/${user.id}`);
+                });
               })
               .catch((err) => {
                 toast.error("Create failed.");
@@ -346,7 +362,7 @@ function Create() {
   };
   return (
     <main className="main">
-      <div className="main__author" data-bg="assets/img/home/bg.gif">
+      <div className="main__author" data-bg="assets/img/home/background.jpg">
         <img src={user.imageCover} width="100%" height="100%" alt="" />
       </div>
       <div className="container">
@@ -609,6 +625,32 @@ function Create() {
                 <div className="col-12">
                   <div className="sign__group">
                     <label className="sign__label" htmlFor="saleType">
+                      <b>Disclaimer</b><br/>
+                      There will be a one time 2.5% admin fee if your item sales.
+                    </label>
+                  </div>
+                </div>
+
+                <div className="col-12 pt-3">
+                  <div className="sign__group filter__checkboxes">
+                    <input
+                      id="authorVerify"
+                      type="checkbox"
+                      name="authorVerify"
+                      checked={authorVerify}
+                      onChange={() => {
+                        setAuthorVerify(!authorVerify);
+                      }}
+                    />
+                    <label className="sign__label" htmlFor="authorVerify">
+                      I am the author of the copyrighted work and/or I am authorized to sell this item.
+                    </label>
+                  </div>
+                </div>
+
+                <div className="col-12">
+                  <div className="sign__group">
+                    <label className="sign__label" htmlFor="saleType">
                       Price and type
                     </label>
                     <select
@@ -649,15 +691,15 @@ function Create() {
                         placeholder=""
                       />
                     </div>
-                    <div className="col-3">
-                      <Switch
-                        onChange={() => {
-                          setIsSale(!isSale);
-                        }}
-                        checked={isSale}
-                        height={26}
-                      />
-                    </div>
+                    {/*<div className="col-3">*/}
+                    {/*  <Switch*/}
+                    {/*    onChange={() => {*/}
+                    {/*      setIsSale(!isSale);*/}
+                    {/*    }}*/}
+                    {/*    checked={isSale}*/}
+                    {/*    height={26}*/}
+                    {/*  />*/}
+                    {/*</div>*/}
 
                     <label className="sign__label" htmlFor="price">
                       Price in USD: ${(price * currency).toFixed(2)}

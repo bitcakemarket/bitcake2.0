@@ -95,7 +95,7 @@
   font-family: "Inter", sans-serif;
 }
 .sign__input:focus {
-  border-color:  #c51458;
+  border-color:  #f2ad07;
 }
 .sign__select {
   background: url("assets/img/checkmark.svg") no-repeat center right 20px #222227;
@@ -138,7 +138,7 @@
 }
 
 .sign__select:focus {
-  border-color:  #c51458;
+  border-color:  #f2ad07;
 }
 .sign__textarea {
   background-color: #222227;
@@ -154,7 +154,7 @@
   font-family: "Inter", sans-serif;
 }
 .sign__textarea:focus {
-  border-color:  #c51458;
+  border-color:  #f2ad07;
 }
 .sign__group {
   display: flex;
@@ -191,11 +191,11 @@
 }
 .sign__group--checkbox input:not(:checked) + label a,
 .sign__group--checkbox input:checked + label a {
-  color:  #c51458;
+  color:  #f2ad07;
 }
 .sign__group--checkbox input:not(:checked) + label a:hover,
 .sign__group--checkbox input:checked + label a:hover {
-  color:  #c51458;
+  color:  #f2ad07;
   text-decoration: underline;
 }
 .sign__group--checkbox input:not(:checked) + label:before,
@@ -260,7 +260,7 @@
   width: 100%;
   height: 50px;
   border-radius: 12px;
-  background-color: #c51458;
+  background-color: #f2ad07;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -295,10 +295,10 @@
 }
 .sign__text a {
   position: relative;
-  color:  #c51458;
+  color:  #f2ad07;
 }
 .sign__text a:hover {
-  color:  #c51458;
+  color:  #f2ad07;
   text-decoration: underline;
 }
 .sign__text--small {
@@ -346,7 +346,7 @@
   width: 10px;
 }
 .sign__social a.gl {
-  background-color:  #c51458
+  background-color:  #f2ad07
 }
 .sign__social a.gl svg {
   width: 18px;
@@ -364,7 +364,7 @@
   fill: #3b5999;
 }
 .sign__social a:hover.gl svg {
-  fill:  #c51458
+  fill:  #f2ad07
 }
 .sign__social a:hover.tw svg {
   fill: #1da1f2;
@@ -436,7 +436,7 @@
   color: #fff;
 }
 .sign__radio input:checked + label:before {
-  border-color:  #c51458;
+  border-color:  #f2ad07;
 }
 .sign__file {
   position: relative;

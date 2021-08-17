@@ -68,7 +68,7 @@
   color: #fff;
 }
 .collection__name a:hover {
-  color:  #c51458;
+  color:  #f2ad07;
 }
 .collection__number {
   display: block;
@@ -78,8 +78,9 @@
   color: #bdbdbd;
   font-weight: 400;
 }
+
 @media (min-width: 768px) {
   .collection {
-    margin-top: 30px;
+    margin-top: 20px;
   }
 }

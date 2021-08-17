@@ -5,15 +5,15 @@ import "./style.css";
 function Item(props) {
   const { id } = useParams();
   const [creatorData, setCreatorData] = useState({ avatar: "/assets/img/avatars/avatar.jpg", firstName: "User", lastName: "" })
-  const [ownerData, setOwnerData] = useState({ avatar: "/assets/img/avatars/avatar.jpg", firstName: "User", lastName: "" })
+  const [collectionData, setCollectionData] = useState({ avatar: "/assets/img/avatars/avatar.jpg", firstName: "User", lastName: "" })
   // const { ownerId } = props.data;
   const [uid, setUid] = useState('')
   const getAvatars = async () => {
     let nft_item = (
       await firestore.collection("nfts").doc(id).get()
     ).data();
-    setOwnerData((await firestore.collection("users").doc(nft_item.ownerId).get()).data())
     setCreatorData((await firestore.collection("users").doc(nft_item.creatorId).get()).data())
+    setCollectionData((await firestore.collection("collections").doc(nft_item.collection).get()).data())
   }
   useEffect(() => {
     if (id === "image" || id === "audio" || id === "video") {
@@ -32,10 +32,10 @@ function Item(props) {
         </div>
       </li>
       <li>
-        <span>Owner</span>
+        <span>Collection</span>
         <div className="asset__author ">
-          <img src={ownerData.avatar} alt=""/>
-          <a href="/collection">{ownerData.firstName} {ownerData.lastName}</a>
+          <img src={collectionData.image} alt=""/>
+          <a href="/collection">{collectionData.name}</a>
         </div>
       </li>
     </ul>

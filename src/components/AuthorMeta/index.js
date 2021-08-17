@@ -1,7 +1,53 @@
-import React from "react";
+import React, {useState} from "react";
+import {auth, firestore} from "../../firebase";
+import {toast} from "react-toastify";
+
 function AuthorMeta(props) {
-  const { avatar, firstName, lastName, nickName, bio } = props.data;
+  const { avatar, firstName, lastName, nickName, bio, id } = props.data;
   const {code} = props
+
+  const [follows, setFollows] = useState(props.data.follows);
+
+  console.log('follows', follows);
+
+  // const [follows, setFollows] = useState(props.data.follows);
+  const followUser = () => {
+    if (auth.currentUser == null) {
+      toast.error('You need to logged in before make likes')
+      return
+    }
+
+    if (follows.includes(auth.currentUser.uid)) {
+      toast.error('You already followed this NFT')
+      return
+    }
+
+    if (id === auth.currentUser.uid) {
+      toast.error('You are a owner')
+      return
+    }
+
+    const temp = [...follows, auth.currentUser.uid];
+
+    firestore.collection("users").doc(id).update({ follows: temp }).then(() => {
+      setFollows(temp)
+      toast.success('You followed ' + nickName)
+      firestore.collection("activities").doc().set({
+        owner: auth.currentUser.uid,
+        title: "Following",
+        method: "start",
+        nickName: nickName,
+        followUser: id,
+        cover: avatar,
+        createdAt: new Date()
+      }).then(() => {
+
+      });
+    }).catch(err => {
+      toast.error(err)
+    })
+
+  }
   return (
     <div className="author__meta">
       <div className="author__avatar author__avatar--verified">
@@ -25,10 +71,14 @@ function AuthorMeta(props) {
       </div>
       <div className="author__wrap">
         <div className="author__followers">
-          <p>3829</p>
+          {
+            follows
+            ?<p>{follows.length}</p>
+            :<p>0</p>
+          }
           <span>Followers</span>
         </div>
-        <button className="author__follow" type="button">Follow</button>
+        <button className="author__follow" type="button" onClick={followUser}>Follow</button>
       </div>
     </div>
   );

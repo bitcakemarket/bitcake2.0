@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, {useContext, useEffect, useState} from "react";
 import Card from "../../components/Card";
 import SellerList from "../../components/SellerList";
 import HotCard from "../../components/HotCard";
 import { firestore } from "../../firebase";
+import {FilterContext} from "../../FilterContext";
 
 import "styles/main.css";
 import axios from "axios";
@@ -14,6 +15,11 @@ function Main() {
   const [nfts, setNfts] = useState([]);
   const [collections, setCollections] = useState([]);
   const [currency, setCurrency] = useState(0.0);
+  const [filteredItem, setFilteredItem] = useState(nfts);
+  const [filteredCollection, setFilteredCollection] = useState(collections);
+  const [filteredUser, setFilteredUser] = useState(sellerLists);
+
+  const { filter, setFilter } = useContext(FilterContext);
 
   const getNFTLists = async () => {
     const nfts = await firestore.collection("nfts").get();
@@ -23,14 +29,16 @@ function Main() {
       const x = nfts.docs[i];
       const temp = x.data();
       const tt = (await axios.get(temp.tokenURI)).data;
+      const user = await firestore.collection("users").doc(temp.creatorId).get();
       if (!user_nfts[temp.creatorId]) user_nfts[temp.creatorId] = [];
-      const ite = { id: x.id, ...temp, ...tt };
+      const ite = { id: x.id, ...user.data(), ...temp, ...tt };
       user_nfts[temp.creatorId].push(ite);
       nfts_list.push(ite);
     }
     console.log('nfts_list', nfts_list);
     setNfts(nfts_list);
-    console.log(nfts_list.filter((x) => x.isSale && x.saleType !== "fix"));
+    setFilteredItem(nfts_list);
+    console.log(nfts_list.filter((x) => x.saleType !== "fix"));
     let temp = Object.keys(user_nfts).map((x) => ({
       id: x,
       nfts: user_nfts[x],
@@ -52,6 +60,7 @@ function Main() {
       });
     }
     setSellerLists(users_info);
+    setFilteredUser(users_info);
   };
 
   const getCollections = async () => {
@@ -63,6 +72,7 @@ function Main() {
       temp.push(dataTemp);
     }
     setCollections(temp);
+    setFilteredCollection(temp);
     console.log('collections', collections);
   }
 
@@ -117,24 +127,53 @@ function Main() {
     })
   }
 
-  useEffect(async () => {
-    await getNFTLists();
-    await getCollections();
+  useEffect(() => {
+
+    let nftFilter = [];
+    let collectionFilter = [];
+    let userFilter = [];
+    setFilteredItem([]);
+    setFilteredCollection([]);
+    setFilteredUser([]);
+    for (let i = 0; i < nfts.length; i++) {
+      if (nfts[i].name.toLowerCase().includes(filter) || nfts[i].nickName.toLowerCase().includes(filter) || nfts[i].price.toString().includes(filter)) {
+        nftFilter.push(nfts[i]);
+      }
+    }
+    for (let i = 0; i < collections.length; i++) {
+      if (collections[i].name.toLowerCase().includes(filter)) {
+        collectionFilter.push(collections[i]);
+      }
+    }
+    for (let i = 0; i < sellerLists.length; i++) {
+      if (sellerLists[i].nickName.toLowerCase().includes(filter)) {
+        userFilter.push(sellerLists[i]);
+      }
+    }
+
+    setFilteredItem(nftFilter);
+    setFilteredCollection(collectionFilter);
+    setFilteredUser(userFilter);
+
+  }, [filter]);
+  useEffect(() => {
+
+  }, [filteredItem, filteredCollection, filteredUser]);
+  useEffect(() => {
+    getNFTLists();
+    getCollections();
     sendRequest(query).then(function(resp) {
       if (resp.ethereum.dexTrades) {
         if (resp.ethereum.dexTrades.length > 0) {
           setCurrency(resp.ethereum.dexTrades[0]['quotePrice'].toFixed(2));
-          console.log('resp.ethereum.dexTrades', resp.ethereum.dexTrades);
-          console.log('currencyCurrency', resp.ethereum.dexTrades[0]['quotePrice'].toFixed(2));
           localStorage.setItem('currency', resp.ethereum.dexTrades[0]['quotePrice'].toFixed(2));
-          console.log("currency", localStorage.getItem('currency'));
         } else {
-          setCurrency(340);
-          localStorage.setItem('currency', 340);
+          setCurrency(390);
+          localStorage.setItem('currency', 390);
         }
       } else {
-        setCurrency(340);
-        localStorage.setItem('currency', 340);
+        setCurrency(390);
+        localStorage.setItem('currency', 390);
       }
     });
   }, []);
@@ -151,8 +190,7 @@ function Main() {
                   on the Binance Smart Chain
                 </h1>
                 <p className="home__text">
-                  It’s free to list your digital collectibles on the sweetest
-                  NFT marketplace in the universe.
+                  List your digital collectibles for free on the most intriguing NFT marketplace in the universe!
                   <br />
                 </p>
 
@@ -186,9 +224,9 @@ function Main() {
 
           {/* <!-- carousel --> */}
           <div className="col-12">
-            <OwlCarousel className='owl-theme'  loop={false} margin={10} nav dots={false} items={4} navText={['<i class="fa fa-arrow-left"></i>', '<i class="fa fa-arrow-right"></i>']}>
-              {nfts
-                .filter((x) => x.isSale && x.saleType !== "fix")
+            <OwlCarousel className='owl-theme' responsive={{0: { items: 1}, 850: { items: 4}}} key={`carousel_${filteredItem.length}`} loop={false} margin={10} nav dots={false} items={4} navText={['<i class="fa fa-arrow-left"></i>', '<i class="fa fa-arrow-right"></i>']}>
+              {filteredItem
+                .filter((x) => x.saleType !== "fix" && ((new Date(x.time)).getTime() - (new Date()).getTime() > 0))
                 .map(
                   (card, index) =>
                     <Card data={card} key={`card-${index}`} />
@@ -219,7 +257,7 @@ function Main() {
           {/* <!-- sellers list --> */}
           <div className="col-12">
             <ul className="sellers-list">
-              {sellerLists.map((data, index) => (
+              {filteredUser.map((data, index) => (
                 <SellerList key={`seller-${index}`} data={data} index={index} />
               ))}
             </ul>
@@ -241,9 +279,9 @@ function Main() {
 
           {/* <!-- carousel --> */}
           <div className="col-12">
-            <OwlCarousel className='owl-theme' loop={false} margin={10} nav dots={false} items={4} navText={['<i class="fa fa-arrow-left"></i>', '<i class="fa fa-arrow-right"></i>']}>
-              {nfts
-                .filter((x) => x.isSale && x.saleType === "fix")
+            <OwlCarousel key={`carousel_${filteredItem.length}`} responsive={{0: { items: 1}, 850: { items: 4}}} className='owl-theme' loop={false} margin={10} nav dots={false} items={4} navText={['<i class="fa fa-arrow-left"></i>', '<i class="fa fa-arrow-right"></i>']}>
+              {filteredItem
+                .filter((x) => x.saleType === "fix")
                 .map(
                   (card, index) =>
                     <Card data={card} key={`card-${index}`} />
@@ -266,11 +304,11 @@ function Main() {
 
           {/* <!-- carousel --> */}
           <div className="col-12">
-            <OwlCarousel className='owl-theme' mouseDrag={false} loop={false} margin={10} nav dots={false} items={5} navText={['<i class="fa fa-arrow-left"></i>', '<i class="fa fa-arrow-right"></i>']}>
-              {collections
+            <OwlCarousel key={`carousel_${filteredCollection.length}`} responsive={{0: { items: 1}, 850: { items: 5 }}} className='owl-theme' mouseDrag={false} loop={false} margin={20} nav dots={false} items={5} navText={['<i class="fa fa-arrow-left"></i>', '<i class="fa fa-arrow-right"></i>']}>
+              {filteredCollection
                 .map(
-                  (hotcard, index) =>
-                    <HotCard data={hotcard} key={`card-${index}`} />
+                  (eachCollection, index) =>
+                    <HotCard editable={{editable: false}} data={eachCollection} key={`card-${index}`} />
                 )}
             </OwlCarousel>
           </div>
@@ -298,7 +336,7 @@ function Main() {
               <h3 className="feature__title">Set up your wallet</h3>
               <p className="feature__text">
                 Once you’ve set up your crypto wallet of choice, connect it to
-                the BitCake marketplace
+                the CollectorsMint marketplace
                 <br />
                 <a href="/signin">Connect my wallet</a>.
               </p>

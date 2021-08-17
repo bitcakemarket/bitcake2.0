@@ -41,8 +41,8 @@ function CollectionPage() {
     setCards(lists);
   }
 
-  useEffect(async () => {
-    await getCards();
+  useEffect(() => {
+    getCards();
     auth.onAuthStateChanged((user) => {
       if (user) {
         getProfile();
@@ -54,8 +54,8 @@ function CollectionPage() {
   }, [account])
   return (
     <main className="main">
-      <div className="main__author" data-bg="assets/img/home/bg.gif">
-        <img src={user.imageCover} width="100%" height="100%" alt="" />
+      <div className="main__author" data-bg="assets/img/home/background.jpg">
+        <img src={user.imageCover ? user.imageCover : "/assets/img/home/background.jpg"} width="100%" height="100%" alt="" />
       </div>
       <div className="container">
         <div className="row row--grid">

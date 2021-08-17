@@ -7,7 +7,7 @@ import Paginator from "../../components/Paginator";
 import Axios from "axios";
 import { firestore } from "../../firebase";
 import "styles/explore.css";
-import {updateProfile} from "../../reducers/actions/userAction";
+
 const breadCrumb = [
 	{title:"Home",page:'/'},
 	{title:"Explorer",page:"/explorer"},
@@ -95,7 +95,7 @@ function Explore() {
     // tempCards.sort((a, b) => (a.createdAt > b.createdAt) ? 1 : -1)
     let maxLikeValue = Math.max.apply(Math, cards.map(function(card) { return card.likes.length; }))
     let minLikeValue = Math.min.apply(Math, cards.map(function(card) { return card.likes.length; }))
-    for (var i = 0; i < cards.length; i++) {
+    for (let i = 0; i < cards.length; i++) {
       if (parseFloat(cards[i].price) >= 0 && parseFloat(cards[i].price) <= price) {
         if (like === "MostLiked") {
           if (cards[i].likes.length === maxLikeValue) {
@@ -170,22 +170,7 @@ function Explore() {
                   <option value="4">Least liked</option>
                 </select>
               </div>
-              {/* <div className="sign__group">
-                <label className="sign__label" htmlFor="subcategory">
-                COLOR
-                </label>
-                <select
-                  name="subcategory"
-                  className="explore__select"
-                  onChange={(e)=>handleSelect(e)}
-                >
-                  <option value="5">All colors</option>
-                  <option value="6">Black</option>
-                  <option value="7">Green</option>
-                  <option value="8">Pink</option>
-                  <option value="9">Purple</option>
-                </select>
-              </div> */}
+
               <div className="sign__group">
                <label className="sign__label" htmlFor="subcategory">
                 CREATOR

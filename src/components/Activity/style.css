@@ -46,10 +46,10 @@
   color: #fff;
 }
 .activity__title a:hover {
-  color: #c51458;
+  color: #f2ad07;
 }
 .activity__title:hover {
-  color: #c51458;
+  color: #f2ad07;
 }
 .activity__text {
   font-size: 16px;
@@ -64,7 +64,7 @@
   font-weight: 500;
 }
 .activity__text a:hover {
-  color:  #c51458;
+  color:  #f2ad07;
 }
 .activity__text b {
   font-weight: 500;

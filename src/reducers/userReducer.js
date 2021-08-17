@@ -1,4 +1,4 @@
-import {SET_PROFILE} from "../actions/userAction"
+import {SET_PROFILE} from "./actions/userAction"
 
 const initialUserData = {
   avatar: "/assets/img/avatars/avatar.jpg",

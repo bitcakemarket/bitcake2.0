@@ -31,7 +31,6 @@
   height: 40px;
 }
 .header__logo img {
-  width: 135px;
   height: 40px;
   display: block;
 }
@@ -114,10 +113,10 @@
   width: 10px;
 }
 .header__btn:hover span {
-  background-color: #c51458;
+  background-color: #f2ad07;
 }
 .header__btn--active span {
-  background-color: #c51458;
+  background-color: #f2ad07;
 }
 .header__btn--active span:nth-child(2) {
   width: 22px;
@@ -174,7 +173,7 @@
   transition: 0.5s ease;
 }
 .header__search button:hover svg {
-  fill: #c51458;
+  fill: #f2ad07;
 }
 .header__search button.close {
   right: 15px;
@@ -243,20 +242,20 @@
   margin-left: 0;
 }
 .header__nav-link--active {
-  color: #c51458;
+  color: #f2ad07;
   cursor: default;
   font-weight: 500;
 }
 .header__nav-link--active:hover {
-  color: #c51458 !important;
+  color: #f2ad07 !important;
 }
 .header__nav-link:hover,
 .header__nav-link[aria-expanded="true"] {
-  color: #c51458;
+  color: #f2ad07;
 }
 .header__nav-link:hover svg,
 .header__nav-link[aria-expanded="true"] svg {
-  fill: #c51458;
+  fill: #f2ad07;
 }
 .header__nav-menu {
   display: block;
@@ -312,11 +311,11 @@
 }
 .header__nav-menu a:hover,
 .header__nav-menu a[aria-expanded="true"] {
-  color: #c51458;
+  color: #f2ad07;
 }
 .header__nav-menu a:hover svg,
 .header__nav-menu a[aria-expanded="true"] svg {
-  fill: #c51458;
+  fill: #f2ad07;
 }
 .header__nav-menu.show {
   z-index: 1000;
@@ -341,7 +340,7 @@
   display: none;
   width: 18px;
   height: 18px;
-  border: 2px solid #c51458;
+  border: 2px solid #f2ad07;
   bottom: 5px;
   left: 30px;
   border-radius: 50%;
@@ -386,11 +385,11 @@
   margin-top: 2px;
 }
 .header__profile-btn:hover {
-  border-color: #c51458;
+  border-color: #f2ad07;
 }
 .header__profile-btn:hover svg,
 .header__profile-btn[aria-expanded="true"] svg {
-  fill: #c51458;
+  fill: #f2ad07;
 }
 .header__profile-menu {
   display: block;
@@ -435,28 +434,42 @@
   font-family: "Inter", sans-serif;
 }
 .header__profile-menu a svg {
-  fill: #c51458;
+  fill: #f2ad07;
   width: 20px;
   height: auto;
   transition: fill 0.5s ease;
   margin-right: 10px;
 }
 .header__profile-menu a:hover {
-  color: #c51458;
+  color: #f2ad07;
 }
 .header__profile-menu a:hover svg {
-  fill: #c51458;
+  fill: #f2ad07;
 }
 .header__profile-menu.show {
   z-index: 1000;
   pointer-events: auto;
   opacity: 1;
 }
+@media (min-width: 320px) {
+  .header__action-btn {
+    line-height: 16px;
+  }
+  .header__action--signin {
+    margin-left: 10px;
+  }
+}
 @media (min-width: 576px) {
+  .header__action-btn {
+    line-height: 21px;
+  }
   .header__action--signin {
     width: auto;
     padding-left: 22px;
   }
+  /*.header__profile-btn svg {*/
+  /*  display: block;*/
+  /*}*/
   .header__action--signin:before {
     content: "";
     position: absolute;
@@ -474,7 +487,7 @@
   }
   .header__action--signin:hover a svg,
   .header__action--signin:hover button svg {
-    fill: #c51458;
+    fill: #f2ad07;
   }
   .header__action-btn span {
     display: block;
@@ -487,7 +500,7 @@
     transition: color 0.5s ease;
   }
   .header__action-btn--signin {
-    background-color: #c51458;
+    background-color: #f2ad07;
     border-radius: 12px;
     padding: 0 20px;
   }
@@ -498,11 +511,14 @@
   .header__action-btn--signin svg {
     display: none;
   }
+  .btn-connect i {
+    display: none;
+  }
   .header__action-btn--signin:hover {
     background-color: #222227;
   }
   .header__action-btn--signin:hover span {
-    color: #c51458;
+    color: #f2ad07;
   }
   .header__content {
     padding: 0 30px;
@@ -538,6 +554,34 @@
   }
 }
 @media (min-width: 1200px) {
+  .btn-connect {
+    background-position: right center;
+    background-image: linear-gradient(to right, #ffad67 0%, #fead37 50%, #f2ad07 100%)
+  }
+  .btn-connect {
+    padding: 10px 15px;
+    text-align: center;
+    text-transform: uppercase;
+    transition: 0.5s;
+    background-size: 200% auto;
+    border-radius: 10px;
+    display: block;
+    box-shadow: 0 0 3px #eee;
+  }
+  .btn-connect span {
+    color: white;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 11px;
+    line-height: 16px;
+  }
+
+  .btn-connect:hover {
+    background-position: center; /* change the direction of the change here */
+    color: #fff;
+    text-decoration: none;
+    box-shadow: 0 0 5px #eee;
+  }
   .header__logo {
     width: auto;
     margin-right: 50px;
@@ -561,7 +605,7 @@
     display: none;
   }
   .header__action-btn svg {
-    fill: #c51458;
+    fill: #f2ad07;
   }
   .header__action-btn--signin {
     height: 40px;
@@ -627,5 +671,13 @@
 @media (min-width: 1440px) {
   .header__search {
     width: 360px;
+  }
+}
+@media screen and (max-width: 720px) {
+  .header__actions {
+    margin-right: 70px;
+  }
+  .btn-connect {
+
   }
 }

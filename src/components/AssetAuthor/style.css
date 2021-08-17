@@ -74,7 +74,7 @@
   font-size: 16px;
 }
 .asset__author a:hover {
-  color:  #c51458;
+  color:  #f2ad07;
 }
 @media (min-width: 576px) {
   .asset__authors {

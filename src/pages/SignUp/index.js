@@ -45,6 +45,7 @@ function SignUp() {
           nickName: "@user",
           email: user.user.email,
           bio: "",
+          follows: []
         };
         const res = await firestore
           .collection("users")
@@ -57,7 +58,7 @@ function SignUp() {
           await creatProfile(user)
           user.user.sendEmailVerification();
           auth.signOut();
-          toast.success("Sent Emain Verification Link to your email");
+          toast.success("Sent Email Verification Link to your email");
           history.push("/signin");
         })
         .catch((error) => {
@@ -145,7 +146,7 @@ function SignUp() {
                     <label htmlFor="remember">
                       I agree to the{" "}
                       <a
-                        href="assets/terms/BitCakeTermsOfService.pdf"
+                        href="assets/terms/CollectorsMint.pdf"
                         target="_blank"
                       >
                         Terms of Service

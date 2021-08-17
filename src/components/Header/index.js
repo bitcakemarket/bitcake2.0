@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, useContext} from "react";
 import { useWeb3React } from "@web3-react/core";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { useEagerConnect } from "hooks/useEagerConnect";
 import { useInactiveListener } from "hooks/useInactiveListener";
-
+import { updateFilter } from "reducers/actions/filterAction";
 import Dropdown from "../Dropdown";
 import Connect from "../Connect";
+import {FilterContext} from "../../FilterContext";
 
 import "styles/header.css";
 import { shortenHex } from "utils/helpers";
@@ -18,6 +19,7 @@ function Header(props) {
   const [open, setOpen] = useState(false);
   // const user = useSelector((state) => state.user);
 
+  const { filter, setFilter } = useContext(FilterContext);
 
   const handleClickOpen = (e) => {
     e.preventDefault();
@@ -31,10 +33,13 @@ function Header(props) {
 
   const { activate, connector, account } = useWeb3React();
 
-  console.log('account', account);
   const connectWallet = async () => {
     await activate(injectedConnector);
   };
+
+  const changeHeaderFilter = (value) => {
+    setFilter(value);
+  }
   // handle logic to recognize the connector currently being activated
   const [activatingConnector, setActivatingConnector] = useState();
 
@@ -52,15 +57,17 @@ function Header(props) {
       <div className="header__content">
         <div className="header__logo">
           <a href="/">
-            <img src="/assets/img/logo.svg" alt="" />
+            <img src="/assets/img/CMyellow.svg" alt="" />
           </a>
         </div>
 
         <form className="header__search">
-          <input
-            type="text"
-            placeholder="Search items, collections, and creators"
-          />
+            <input
+              type="text"
+              placeholder="Search items, collections, and creators"
+              onChange={(e) => setFilter(e.target.value)}
+            />
+
           <button type="button">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
               <path d="M21.71,20.29,18,16.61A9,9,0,1,0,16.61,18l3.68,3.68a1,1,0,0,0,1.42,0A1,1,0,0,0,21.71,20.29ZM11,18a7,7,0,1,1,7-7A7,7,0,0,1,11,18Z" />
@@ -116,48 +123,20 @@ function Header(props) {
               >
                 <li>
                   <a
-                    href="assets/terms/BitCakeWhitePaper.pdf"
+                    href="assets/terms/CollectorsMintWhitePaper.pdf"
                     target="_blank"
                     rel="noreferrer"
                   >
-                    BitCake
-                    <br />
-                    (BCK) White Paper
+                    CollectorsMint
+                    <br /> White Paper
                   </a>
                 </li>
                 <li>
                   <a
-                    href="assets/terms/BitCakeTermsOfService.pdf"
+                    href="assets/terms/CollectorsMint.pdf"
                     target="_blank"
                   >
                     Terms of Service
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://cakeshoplabs.com/"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Design an NFT
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href=" https://t.me/bitcakeclub"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Telegram Community
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="assets/terms/BitCakeStrategicPartners.pdf"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Become a Partner
                   </a>
                 </li>
                 <li>
@@ -197,10 +176,11 @@ function Header(props) {
 
               {!account ?
                 <a
-                  className="btn-connect"
+                  className="header__action-btn btn-connect"
                   href="/connect-wallet"
                 >
-                  Connect Wallet
+                  <span>Connect Wallet</span>
+                  <i className="fa fa-google-wallet"></i>
                 </a>
                 :
                 <a

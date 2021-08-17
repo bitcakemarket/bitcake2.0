@@ -6,6 +6,7 @@ import reportWebVitals from "./reportWebVitals";
 import { Web3ReactProvider } from "@web3-react/core";
 import { Web3Provider } from "@ethersproject/providers";
 import Web3ReactManager from "./context/Web3ReactManager";
+import configureStore from "./store";
 
 function getLibrary(provider) {
   const library = new Web3Provider(provider);
@@ -13,12 +14,16 @@ function getLibrary(provider) {
   return library;
 }
 
+const initialState = {};
+const store = configureStore(initialState);
+
 ReactDOM.render(
-  <Web3ReactProvider getLibrary={getLibrary}>
-    <Web3ReactManager>
-      <App />
-    </Web3ReactManager>
-  </Web3ReactProvider>,
+    <Web3ReactProvider  getLibrary={getLibrary}>
+      <Web3ReactManager>
+        <App />
+      </Web3ReactManager>
+    </Web3ReactProvider>
+  ,
   document.getElementById("root")
 );
 

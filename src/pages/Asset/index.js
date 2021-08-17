@@ -15,6 +15,7 @@ import axios from "axios";
 import OwlCarousel from 'react-owl-carousel';
 import 'owl.carousel/dist/assets/owl.carousel.css';
 import 'owl.carousel/dist/assets/owl.theme.default.css';
+import {useHistory} from "react-router-dom";
 
 const breadcrumb = [
   { title: "Home", page: "/" },
@@ -101,13 +102,7 @@ const bidsData = [
     verified: true,
   },
 ];
-const detail = [
-  {
-    avatar: "/assets/img/avatars/avatar5.jpg",
-    authorName: "@midinh",
-    createdYear: 2021,
-  },
-];
+
 const assetCards = [
   {
     type: "image",
@@ -188,11 +183,19 @@ function Item(props) {
   const [item, setItem] = useState({});
   const startingBid = 2;
   const bnbRate = localStorage.getItem('currency');
-  console.log('currency', localStorage.getItem('currency'));
   const [isProcessing, setIsProcessing] = useState(false)
+  const [collection, setCollection] = useState({});
+  const [detail, setDetail] = useState(
+    [{
+      avatar: "/assets/img/avatars/avatar5.jpg",
+      authorName: "@midinh",
+      createdYear: 2021,
+    }]
+  );
   const { library, active, account } = useWeb3React();
 
   const [assetCards, setAssetCards] = useState([]);
+  const history = useHistory();
 
   const getData = async () => {
     let nft_item = (
@@ -202,7 +205,15 @@ function Item(props) {
     const owner_info = (await firestore.collection("users").doc(nft_item.ownerId).get()).data()
     console.log(nft_item, nft_info, owner_info)
     setItem({...nft_item, ...nft_info, ...owner_info})
-    console.log('item', item);
+
+    setDetail([{
+      avatar: owner_info.avatar,
+      authorName: owner_info.nickName,
+      createdYear: owner_info.createdAt.toDate().getFullYear()
+    }]);
+    // const collectionData = (await firestore.collection("collections").doc(item.collection).get()).data();
+    // console.log('collectionData', collectionData);
+    // setCollection(collectionData);
   }
 
   const getNTFLists = async () => {
@@ -218,11 +229,26 @@ function Item(props) {
       user_nfts[temp.creatorId].push(ite);
       nfts_list.push(ite);
     }
-    console.log('nfts_list', nfts_list);
     setAssetCards(nfts_list);
   }
 
-  useEffect(async() => {
+  const buyItem = () => {
+    console.log('active', active);
+    if (!active) {
+      history.push("/connect-wallet");
+      return;
+    }
+  }
+
+  const bidItem = () => {
+    console.log('active', active);
+    if (!active) {
+      history.push("/connect-wallet");
+      return;
+    }
+  }
+
+  useEffect(() => {
     getNTFLists();
     if (id === 'image') {
       setItem({
@@ -284,7 +310,7 @@ function Item(props) {
     } else if (id === 'video') {
       
     } else {
-      await getData()
+      getData()
     }
   }, [id])
   const renderer = ({ days, hours, minutes, seconds, completed }) => {
@@ -369,14 +395,14 @@ function Item(props) {
                     <button
                       disabled={isProcessing || item.owner === account}
                       className="asset__btn asset__btn--full asset__btn--clr"
-                      onClick={()=>{}}
+                      onClick={buyItem}
                     >
                       {isProcessing ? 'Waiting...' : 'Buy'}
                     </button> :
                     <button
                       disabled={isProcessing}
                       className="asset__btn asset__btn--full asset__btn--clr"
-                      onClick={()=>{}}
+                      onClick={bidItem}
                     >
                       {isProcessing ? 'Waiting...' : 'Place a bid'}
                     </button>

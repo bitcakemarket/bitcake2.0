@@ -18,13 +18,13 @@ class Waveform extends Component {
 
     this.waveform = WaveSurfer.create({
       barWidth: 2,
-      barHeight: 2,
+      barHeight: 4,
       cursorWidth: 1,
       barRadius: 3,
       container: '#waveform' + this.state.formId,
       backend: 'WebAudio',
-      height: 50,
-      progressColor: '#E2125D',
+      height: 100,
+      progressColor: '#fcae30',
       responsive: true,
       waveColor: '#FFFFFF',
       cursorColor: 'transparent',
@@ -51,6 +51,10 @@ class Waveform extends Component {
               src={playBtn}
               onClick={this.handlePlay}
               alt="play"
+              style={{
+                marginTop: "auto",
+                marginBottom: "auto"
+              }}
             />
           </>
         ) : (
@@ -60,6 +64,10 @@ class Waveform extends Component {
               src={stopBtn}
               onClick={this.handlePlay}
               alt="stop"
+              style={{
+                marginTop: "auto",
+                marginBottom: "auto"
+              }}
             />
           </>
         )}

@@ -3,7 +3,7 @@ import {
   LOGIN_WITH_EMAIL_LOADING,
   LOGIN_WITH_EMAIL_SUCCESS,
 } from "./types/auth";
-import { SET_PROFILE_SUCCESS } from "../actions/action_types/users";
+// import { SET_PROFILE_SUCCESS } from "../actions/action_types/users";
 
 const initialState = {
   token: localStorage.getItem("token"),
@@ -30,12 +30,12 @@ const authReducer = (state = initialState, { type, payload }) => {
         current_user: payload.user.email,
         error: null,
       };
-    case SET_PROFILE_SUCCESS:
-      return {
-        ...state,
-        sess: payload,
-        isLoading: false,
-      };
+    // case SET_PROFILE_SUCCESS:
+    //   return {
+    //     ...state,
+    //     sess: payload,
+    //     isLoading: false,
+    //   };
     case LOGOUT_SUCCESS:
       localStorage.removeItem("token");
       return {

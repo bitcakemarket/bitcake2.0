@@ -5,7 +5,7 @@ import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web and AsyncStorage for react-native
 
 import rootReducer from "./reducers";
-import rootSaga from "./sagas";
+// import rootSaga from "./sagas";
 
 const persistConfig = {
   key: "root",
@@ -34,8 +34,9 @@ export default function configureStore(initialState) {
   const composedEnhancers = composeWithDevTools(...enhancers);
 
   const store = createStore(persistedReducer, initialState, composedEnhancers);
-  let persistor = persistStore(store);
+  // let persistor = persistStore(store);
 
-  sagaMiddleware.run(rootSaga);
-  return { store, persistor };
+  // sagaMiddleware.run(rootSaga);
+  // return { store, persistor };
+  return store;
 }

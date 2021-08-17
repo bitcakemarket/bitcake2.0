@@ -1,7 +1,8 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import BreadCrumb from "components/BreadCrumb";
 import Filter from "./Filter";
 import Author from "components/Author";
+import {firestore} from "../../firebase";
 const breadCrumb = [
   { title: "Home", page: "/" },
   { title: "Creators", page: "/creators" },
@@ -73,6 +74,22 @@ const authors = [
   },
 ];
 function Authors() {
+  const [allUsers, setAllUsers] = useState([]);
+
+  const getAllUsers = async () => {
+    let users = await firestore.collection('users').get();
+    let temp = []
+    for (var i = 0; i < users.docs.length; i++) {
+      var doc = users.docs[i].data();
+      doc.id = users.docs[i].id;
+      temp.push(doc);
+    }
+    console.log('temp', temp);
+    setAllUsers(temp);
+  }
+  useEffect(() => {
+    getAllUsers();
+  }, []);
   return (
     <main className="main">
       <div className="container">
@@ -93,7 +110,7 @@ function Authors() {
 
         {/* authors */}
         <div className="row row--grid">
-          {authors.map((author, index) => (
+          {allUsers.map((author, index) => (
             <div
               className="col-12 col-sm-6 col-lg-4 col-xl-3"
               key={`author-${index}`}

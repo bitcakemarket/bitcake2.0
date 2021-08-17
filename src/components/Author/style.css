@@ -97,19 +97,19 @@
   color: #fff;
 }
 .author__name a:hover {
-  color:  #c51458;
+  color:  #f2ad07;
 }
 .author__nickname {
   display: block;
   width: 100%;
   font-size: 16px;
-  color:  #c51458;
+  color:  #f2ad07;
   font-family: "Inter", sans-serif;
   font-weight: 500;
   margin-bottom: 10px;
 }
 .author__nickname a {
-  color:  #c51458;
+  color:  #f2ad07;
 }
 .author__nickname a:hover {
   color: #fff;
@@ -172,15 +172,15 @@
 }
 .author__follow:hover {
   color: #fff;
-  background-color:  #c51458;
+  background-color:  #f2ad07;
 }
 .author__follow--true {
-  background-color:  #c51458;
+  background-color:  #f2ad07;
   color: #fff;
 }
 .author__follow--true:hover {
   background-color: #222227;
-  color:  #c51458;
+  color:  #f2ad07;
 }
 .author__social {
   display: flex;
@@ -211,7 +211,7 @@
   margin-right: 0;
 }
 .author__social a:hover svg {
-  fill:  #c51458;
+  fill:  #f2ad07;
 }
 .author__code {
   display: flex;
@@ -287,7 +287,7 @@
   transition-property: opacity, transform;
 }
 .author__code button svg {
-  fill:  #c51458;
+  fill:  #f2ad07;
   width: 18px;
   height: auto;
   opacity: 0.75;
@@ -318,11 +318,11 @@
 .author__link svg {
   width: 20px;
   height: auto;
-  fill:  #c51458;
+  fill:  #f2ad07;
   margin-right: 5px;
 }
 .author__link:hover {
-  color:  #c51458;
+  color:  #f2ad07;
 }
 @media (min-width: 576px) {
   .author__text {

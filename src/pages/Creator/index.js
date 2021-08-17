@@ -21,7 +21,7 @@ function Creator() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [avatar, setAvatar] = useState("/assets/img/avatars/avatar.jpg");
-  const [imageCover, setImageCover] = useState("/assets/img/home/bg.gif");
+  const [imageCover, setImageCover] = useState("/assets/img/home/hero.jpg");
   const [file, setFile] = useState(null);
   const [coverFile, setCoverFile] = useState(null);
   const [nickName, setNickName] = useState("");
@@ -31,18 +31,21 @@ function Creator() {
   const [uid, setUid] = useState("");
   const [createdCards, setCreatedCards] = useState([]);
   const [collections, setCollections] = useState([]);
+  const [oldPass, setOldPass] = useState("");
+  const [newPass, setNewPass] = useState("");
+  const [confirmPass, setConfirmPass] = useState("");
   // const [showModal, setShowModal] = useState(false);
 
-  useEffect(async () => {
+  useEffect(() => {
     auth.onAuthStateChanged((auth) => {
       if (auth) {
         // setEmail(auth.email);
         setUid(auth.uid);
       }
     });
-    await getProfile(id);
-    await getNFTList();
-    await getCollections();
+    getProfile(id);
+    getNFTList();
+    getCollections();
   }, [id]);
 
   const getProfile = async (id) => {
@@ -52,7 +55,7 @@ function Creator() {
     if (!userProfile)
       userProfile = {
         avatar: "/assets/img/avatars/avatar.jpg",
-        imageCover: "/assets/img/home/bg.gif",
+        imageCover: "/assets/img/home/hero.svg",
         firstName: "",
         lastName: "",
         nickName: "",
@@ -65,11 +68,9 @@ function Creator() {
     resetProfile(userProfile)
   };
   const getNFTList = async () => {
-    console.log('get nft list')
     const res = await firestore.collection("nfts").get()
     let lists = []
     let createdLists = [];
-    console.log('res.docs', res.docs);
     for (let i = 0; i < res.docs.length; i++)
     {
       let doc = res.docs[i].data()
@@ -82,13 +83,11 @@ function Creator() {
       }
     }
     setCards(lists)
-    console.log('lists', lists);
     setCreatedCards(createdLists)
   }
 
   const getCollections = async () => {
     const currentCollections = await firestore.collection('collections').get();
-    console.log('currentCollectins', currentCollections.docs);
     let collectionList = [];
     for (let i = 0; i < currentCollections.docs.length; i++) {
       let dataTemp = currentCollections.docs[i].data();
@@ -96,13 +95,7 @@ function Creator() {
       collectionList.push(dataTemp);
     }
     setCollections(collectionList);
-    console.log('collections', collections);
   }
-  //
-  // useEffect(async () => {
-  //   await getNFTList();
-  //   await getCollections();
-  // }, [account])
 
   const saveProfile = async () => {
     if (!firstName || !lastName || !nickName || !bio) {
@@ -114,19 +107,14 @@ function Creator() {
       if (uploadTask.state !== "success") return;
       imgUrl = await uploadTask.ref.getDownloadURL();
     }
-    console.log('dd', imageCover, user.imageCover, coverFile)
     if (imageCover !== user.imageCover && coverFile) {
       const uploadCoverTask = await storage.ref(`/covers/${uid}`).put(coverFile);
-      console.log(uploadCoverTask)
       if (uploadCoverTask.state !== "success") return;
       imgCoverUrl = await uploadCoverTask.ref.getDownloadURL();
-      console.log(imgCoverUrl)
     }
-    // console.log(imgUrl || user.avatar || "/assets/img/avatars/avatar.jpg")
-    // console.log(imgCoverUrl || user.imageCover || "/assets/img/home/bg.gif")
     const author = {
       avatar: imgUrl || user.avatar || "/assets/img/avatars/avatar.jpg",
-      imageCover: imgCoverUrl || user.imageCover || "/assets/img/home/bg.gif",
+      imageCover: imgCoverUrl || user.imageCover || "/assets/img/home/hero.svg",
       firstName,
       lastName,
       nickName,
@@ -139,6 +127,7 @@ function Creator() {
       .set(author)
       .then(() => {
         toast.success("Update profile");
+        setUser(author);
       })
       .catch((err) => {
         toast.error("Update failed.");
@@ -170,7 +159,6 @@ function Creator() {
     input.click();
   }, []);
   const resetProfile = (data) => {
-    console.log('reset', imageCover);
     setFirstName(data.firstName);
     setLastName(data.lastName);
     setAvatar(data.avatar);
@@ -180,9 +168,25 @@ function Creator() {
     setEmail(data.email);
   };
 
+  const updatePassword = () => {
+    if (newPass !== confirmPass) {
+      toast.error("Check the confirm password");
+      return;
+    }
+    auth
+      .signInWithEmailAndPassword(email, oldPass)
+      .then(async (res) => {
+        await res.user.updatePassword(newPass);
+        toast.success("Updated password successfully")
+      })
+      .catch((error) => {
+        toast.error(error);
+      });
+  }
+
   return (
     <main className="main">
-      <div className="main__author" data-bg="assets/img/home/bg.gif">
+      <div className="main__author" data-bg="assets/img/home/background.jpg">
         <img src={user.imageCover} width="100%" height="100%" alt="" />
       </div>
       <div className="container">
@@ -392,43 +396,15 @@ function Creator() {
                 id="tab-3"
                 role="tabpanel"
               >
-                <OwlCarousel className='owl-theme' mouseDrag={false} margin={10} nav dots={false} items={5} navText={['<i class="fa fa-arrow-left"></i>', '<i class="fa fa-arrow-right"></i>']}>
+                <OwlCarousel key={`carousel_${collections.length}`} responsive={{0: { items: 1}, 850: { items: 4 }}} className='owl-theme' mouseDrag={false} margin={10} nav dots={false} navText={['<i class="fa fa-arrow-left"></i>', '<i class="fa fa-arrow-right"></i>']}>
                   {(collections.length > 0) &&
                     (collections
                     .map(
                       (collection, index) =>
-                        <HotCard data={collection} key={`card-${index}`} />
+                        <HotCard editable={{editable: true}} data={collection} key={`card-${index}`} />
                     ))}
                 </OwlCarousel>
 
-                {/* collapse */}
-                {/*<div className="row row--grid collapse" id="collapsemore">*/}
-                {/*  {cards.filter(x=>x.isSale).map(*/}
-                {/*    (card, index) =>*/}
-                {/*      index >= 6 && (*/}
-                {/*        <div*/}
-                {/*          className="col-12 col-sm-6 col-lg-4"*/}
-                {/*          key={`card-${index}`}*/}
-                {/*        >*/}
-                {/*          <Card data={card} />*/}
-                {/*        </div>*/}
-                {/*      )*/}
-                {/*  )}*/}
-                {/*</div>*/}
-                {/*<div className="row row--grid">*/}
-                {/*  <div className="col-12">*/}
-                {/*    <button*/}
-                {/*      className="main__load"*/}
-                {/*      type="button"*/}
-                {/*      data-toggle="collapse"*/}
-                {/*      data-target="#collapsemore"*/}
-                {/*      aria-expanded="false"*/}
-                {/*      aria-controls="collapsemore"*/}
-                {/*    >*/}
-                {/*      Load more*/}
-                {/*    </button>*/}
-                {/*  </div>*/}
-                {/*</div>*/}
               </div>
 
               <div className="tab-pane fade" id="tab-4" role="tabpanel">
@@ -438,7 +414,7 @@ function Creator() {
                     <form action="#" className="sign__form sign__form--profile">
                       <div className="row">
                         <div className="col-12 sign__cover">
-                          <img src={imageCover?imageCover: "/assets/img/home/bg.gif"} alt="" onClick={updateCover} />
+                          <img src={imageCover?imageCover: "/assets/img/hero.svg"} alt="" onClick={updateCover} />
                         </div>
                         <div className="sign__avatar">
                           <img src={avatar} alt="" onClick={updateAvatar} />
@@ -572,6 +548,7 @@ function Creator() {
                               type="password"
                               name="oldpass"
                               className="sign__input"
+                              onChange={(e) => setOldPass(e.target.value)}
                             />
                           </div>
                         </div>
@@ -586,6 +563,7 @@ function Creator() {
                               type="password"
                               name="newpass"
                               className="sign__input"
+                              onChange={(e) => setNewPass(e.target.value)}
                             />
                           </div>
                         </div>
@@ -603,30 +581,31 @@ function Creator() {
                               type="password"
                               name="confirmpass"
                               className="sign__input"
+                              onChange={(e) => setConfirmPass(e.target.value)}
                             />
                           </div>
                         </div>
 
-                        <div className="col-12 col-md-6 col-lg-12 col-xl-6">
-                          <div className="sign__group">
-                            <label className="sign__label" htmlFor="select">
-                              Select
-                            </label>
-                            <select
-                              name="select"
-                              id="select"
-                              className="sign__select"
-                            >
-                              <option value="0">Option</option>
-                              <option value="1">Option 2</option>
-                              <option value="2">Option 3</option>
-                              <option value="3">Option 4</option>
-                            </select>
-                          </div>
-                        </div>
+                        {/*<div className="col-12 col-md-6 col-lg-12 col-xl-6">*/}
+                        {/*  <div className="sign__group">*/}
+                        {/*    <label className="sign__label" htmlFor="select">*/}
+                        {/*      Select*/}
+                        {/*    </label>*/}
+                        {/*    <select*/}
+                        {/*      name="select"*/}
+                        {/*      id="select"*/}
+                        {/*      className="sign__select"*/}
+                        {/*    >*/}
+                        {/*      <option value="0">Option</option>*/}
+                        {/*      <option value="1">Option 2</option>*/}
+                        {/*      <option value="2">Option 3</option>*/}
+                        {/*      <option value="3">Option 4</option>*/}
+                        {/*    </select>*/}
+                        {/*  </div>*/}
+                        {/*</div>*/}
 
                         <div className="col-12">
-                          <button className="sign__btn" type="button">
+                          <button className="sign__btn" type="button" onClick={updatePassword}>
                             Change
                           </button>
                         </div>
